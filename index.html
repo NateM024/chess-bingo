@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chess Bingo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0b08;
+  --bg2: #141210;
+  --bg3: #1c1916;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text: #ece8de;
+  --text2: #9a9182;
+  --text3: #5a5347;
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.35);
+  --gold-bg: rgba(201,168,76,0.09);
+  --green: #4a9e6e;
+  --green-bg: rgba(74,158,110,0.13);
+  --green-text: #7ecba0;
+  --red: #c0504a;
+  --red-bg: rgba(192,80,74,0.13);
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse 90% 70% at 50% 40%, transparent 30%, var(--bg) 100%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── SCREENS ── */
+.screen { position: relative; z-index: 1; display: none; }
+.screen.active { display: flex; }
+
+/* ── LOBBY ── */
+#lobbyScreen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  gap: 0;
+}
+.logo { text-align: center; margin-bottom: 2.5rem; }
+.logo h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 10vw, 64px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+.logo h1 em { color: var(--gold); font-style: normal; }
+.logo p { font-size: 11px; letter-spacing: 0.18em; color: var(--text3); margin-top: 8px; text-transform: uppercase; }
+
+.lobby-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+.lobby-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--text);
+}
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 10px; letter-spacing: 0.12em; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; }
+.form-group input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-group input:focus { border-color: var(--gold-dim); }
+.form-group input::placeholder { color: var(--text3); }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
+.divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+.divider span { font-size: 11px; color: var(--text3); }
+
+.btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+  width: 100%;
+}
+.btn-gold { background: var(--gold); border: none; color: #0d0b08; }
+.btn-gold:hover { background: #d4b05a; transform: translateY(-1px); }
+.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+.btn-outline:hover { border-color: var(--text3); color: var(--text); background: rgba(255,255,255,0.04); }
+.btn:active { transform: scale(0.98) !important; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+.lobby-msg { font-size: 12px; color: var(--text3); text-align: center; margin-top: 1rem; min-height: 18px; }
+.lobby-msg.error { color: var(--red); }
+.lobby-msg.success { color: var(--green-text); }
+
+.waiting-box {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  background: var(--bg2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.waiting-box.show { display: flex; }
+.room-code {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--gold);
+}
+.waiting-box p { font-size: 11px; color: var(--text3); letter-spacing: 0.08em; }
+.copy-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--text3); }
+.pulse { animation: pulse 1.5s infinite ease-in-out; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── GAME SCREEN ── */
+#gameScreen {
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  position: relative; z-index: 2;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.game-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 900;
+  letter-spacing: -0.5px;
+}
+.game-title em { color: var(--gold); font-style: normal; }
+.player-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  display: flex; align-items: center; gap: 5px;
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; }
+.badge.active-turn { border-color: var(--gold-dim); background: var(--gold-bg); color: var(--gold); }
+.dot-white { background: #f0ebe0; }
+.dot-black { background: #4a4540; border: 1px solid #6a6560; }
+.header-btns { display: flex; gap: 6px; }
+.sm-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.12s;
+}
+.sm-btn:hover { color: var(--text); border-color: var(--text3); }
+.sm-btn.danger:hover { color: var(--red); border-color: var(--red); }
+
+.game-body {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ── CHESS PANEL ── */
+.chess-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  flex: 0 0 auto;
+  border-right: 1px solid var(--border);
+  gap: 12px;
+}
+#chessboard { width: clamp(240px, 42vw, 460px) !important; }
+.board-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-transform: uppercase;
+  text-align: center;
+}
+.move-history {
+  width: clamp(240px, 42vw, 460px);
+  max-height: 80px;
+  overflow-y: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+  scrollbar-width: thin;
+}
+
+/* ── BINGO PANEL ── */
+.bingo-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem;
+  overflow-y: auto;
+  min-width: 0;
+}
+.bingo-panel h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.bingo-subtitle { font-size: 10px; color: var(--text3); margin-bottom: 1rem; letter-spacing: 0.06em; }
+
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+.cell {
+  aspect-ratio: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 4px 2px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+  background: var(--bg2);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 54px;
+}
+.cell:hover:not(.free-cell) { border-color: var(--border2); background: var(--bg3); transform: scale(1.03); }
+.cell:active:not(.free-cell) { transform: scale(0.96); }
+.cell.marked { background: var(--bg3); border-color: var(--gold-dim); }
+.cell.marked::after { content: ''; position: absolute; inset: 0; background: var(--gold-bg); pointer-events: none; }
+.cell.bingo-line { border-color: var(--green) !important; background: rgba(74,158,110,0.1) !important; }
+.cell.free-cell { cursor: default; border-color: var(--gold-dim); background: var(--gold-bg); }
+.cell-icon { font-size: clamp(13px, 2.5vw, 18px); line-height: 1; margin-bottom: 2px; position: relative; z-index: 1; }
+.cell-text { font-size: clamp(6px, 1.2vw, 8px); line-height: 1.25; color: var(--text3); position: relative; z-index: 1; }
+.cell.marked .cell-text { color: var(--text2); }
+.cell.free-cell .cell-text { color: var(--gold); font-weight: 500; }
+.check { position: absolute; top: 3px; right: 4px; font-size: 8px; color: var(--gold); opacity: 0; z-index: 2; }
+.cell.marked .check { opacity: 1; }
+.cell.free-cell .check { opacity: 0 !important; }
+
+.bingo-status { font-size: 11px; color: var(--text3); margin-bottom: 0.5rem; }
+
+/* ── GAME OVER OVERLAY ── */
+#gameOverOverlay {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 100;
+  background: rgba(13,11,8,0.88);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+}
+#gameOverOverlay.show { display: flex; }
+.gameover-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.gameover-icon { font-size: 48px; margin-bottom: 12px; }
+.gameover-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 900;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.gameover-card p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.6; }
+.gameover-btns { display: flex; gap: 8px; justify-content: center; }
+.gameover-btns .btn { width: auto; padding: 9px 22px; }
+
+/* ── CHAT / LOG ── */
+.event-log {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+.event-log-title { font-size: 9px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; }
+.log-entries { max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; scrollbar-width: thin; }
+.log-entry { font-size: 10px; color: var(--text3); line-height: 1.4; }
+.log-entry .ts { color: var(--text3); opacity: 0.5; margin-right: 4px; }
+.log-entry.highlight { color: var(--green-text); }
+.log-entry.warn { color: var(--gold); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .game-body { flex-direction: column; }
+  .chess-panel { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
+  #chessboard { width: min(85vw, 340px) !important; }
+  .move-history { width: min(85vw, 340px); }
+  .bingo-panel { padding: 1rem; }
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.4s ease both; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOBBY ═══════════════ -->
+<div id="lobbyScreen" class="screen active">
+  <div class="logo fade-in">
+    <h1>Chess <em>Bingo</em></h1>
+    <p>Win by checkmate — or complete a bingo line first</p>
+  </div>
+
+  <div class="lobby-card fade-in" id="lobbyCard" style="animation-delay:0.1s">
+    <h2>Create a game</h2>
+    <div class="form-group">
+      <label>Your name</label>
+      <input type="text" id="createName" placeholder="e.g. Magnus" maxlength="20">
+    </div>
+    <button class="btn btn-gold" onclick="createGame()">Create room</button>
+
+    <div class="divider"><hr><span>or</span><hr></div>
+
+    <h2>Join a game</h2>
+    <div class="form-group">
+      <label>Your name</label>
+      <input type="text" id="joinName" placeholder="e.g. Hikaru" maxlength="20">
+    </div>
+    <div class="form-group">
+      <label>Room code</label>
+      <input type="text" id="joinCode" placeholder="e.g. A3F9C2" maxlength="6" style="text-transform:uppercase; letter-spacing:0.15em">
+    </div>
+    <button class="btn btn-outline" onclick="joinGame()">Join room</button>
+    <p class="lobby-msg" id="lobbyMsg"></p>
+  </div>
+
+  <div class="waiting-box" id="waitingBox">
+    <p class="pulse" style="font-size:11px;color:var(--text3);letter-spacing:0.1em">WAITING FOR OPPONENT</p>
+    <div class="room-code" id="displayCode"></div>
+    <p>Share this code with your opponent</p>
+    <button class="copy-btn" onclick="copyCode()">Copy code</button>
+  </div>
+</div>
+
+<!-- ═══════════════ GAME ═══════════════ -->
+<div id="gameScreen" class="screen">
+  <div class="game-header">
+    <div class="game-title">Chess <em>Bingo</em></div>
+    <div class="player-badges">
+      <div class="badge" id="badge-white">
+        <span class="dot dot-white"></span>
+        <span id="badge-white-name">White</span>
+      </div>
+      <div class="badge" id="badge-black">
+        <span class="dot dot-black"></span>
+        <span id="badge-black-name">Black</span>
+      </div>
+    </div>
+    <div class="header-btns">
+      <button class="sm-btn" onclick="copyCode()">Room: <span id="headerCode"></span></button>
+      <button class="sm-btn danger" onclick="resign()">Resign</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <!-- Chess -->
+    <div class="chess-panel">
+      <div class="board-label" id="chessTurnLabel">White to move</div>
+      <div id="chessboard"></div>
+      <div class="move-history" id="moveHistory">—</div>
+    </div>
+
+    <!-- Bingo -->
+    <div class="bingo-panel">
+      <h3>Your Bingo Card</h3>
+      <p class="bingo-subtitle">mark events as they happen on the board</p>
+      <p class="bingo-status" id="bingoStatus">0 squares marked</p>
+      <div class="bingo-grid" id="bingoGrid"></div>
+
+      <div class="event-log">
+        <div class="event-log-title">Game log</div>
+        <div class="log-entries" id="logEntries"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ GAME OVER ═══════════════ -->
+<div id="gameOverOverlay">
+  <div class="gameover-card">
+    <div class="gameover-icon" id="gameOverIcon">♛</div>
+    <h2 id="gameOverTitle">Game Over</h2>
+    <p id="gameOverMsg"></p>
+    <div class="gameover-btns">
+      <button class="btn btn-outline" onclick="location.reload()">New game</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+// ── BINGO EVENTS ──
+const ALL_EVENTS = [
+  { icon: "♟", label: "Pawn\npromotes", desc: "Pawn reaches back rank" },
+  { icon: "♜", label: "Rook\nlifts", desc: "Rook moves to open file" },
+  { icon: "0-0", label: "Kingside\ncastle", desc: "Either player castles kingside" },
+  { icon: "0-0-0", label: "Queenside\ncastle", desc: "Either player castles queenside" },
+  { icon: "♝", label: "Bishop\npair won", desc: "Player captures one of two bishops" },
+  { icon: "⚔", label: "Piece\nsacrifice", desc: "Material given up intentionally" },
+  { icon: "e.p.", label: "En\npassant", desc: "En passant capture is made" },
+  { icon: "♛", label: "Queen\ntrade", desc: "Both queens are exchanged" },
+  { icon: "✝", label: "Discovered\ncheck", desc: "Piece moves, revealing check" },
+  { icon: "++", label: "Double\ncheck", desc: "Two pieces check simultaneously" },
+  { icon: "♞", label: "Knight\nfork", desc: "Knight attacks two pieces at once" },
+  { icon: "Z", label: "Zugzwang", desc: "Player forced into a bad move" },
+  { icon: "?!", label: "Blunder\nmade", desc: "A clear losing move is played" },
+  { icon: "→", label: "Passed\npawn", desc: "Pawn with no opposing pawns" },
+  { icon: "♔", label: "King\nactivates", desc: "King moves in the endgame" },
+  { icon: "△△", label: "Pawn\nchain", desc: "Three or more connected pawns" },
+  { icon: "★", label: "Outpost\ncreated", desc: "Knight on protected outpost" },
+  { icon: "♖7", label: "Rook on\n7th rank", desc: "Rook reaches the 7th rank" },
+  { icon: "◈", label: "Skewer\nattack", desc: "A valuable piece is skewered" },
+  { icon: "▲▲▲", label: "Pawn\nstorm", desc: "Three pawns advance same wing" },
+  { icon: "½", label: "Stalemate\nnear miss", desc: "Stalemate threat is avoided" },
+  { icon: "♞♞", label: "Both knights\nlive", desc: "Both knights remain in endgame" },
+  { icon: "○", label: "Isolated\npawn", desc: "Pawn has no adjacent pawns" },
+  { icon: "↺", label: "Threefold\nrep.", desc: "Same position repeated 3 times" },
+];
+
+// ── STATE ──
+let socket;
+let myColor = null;
+let myName = '';
+let opponentName = '';
+let roomId = '';
+let game; // chess.js
+let board; // chessboard.js
+let bingoBoard = [];
+let marked = new Set();
+let gameActive = false;
+
+// ── SOCKET SETUP ──
+function initSocket() {
+  socket = io();
+
+  socket.on('opponent_joined', ({ name }) => {
+    opponentName = name;
+    addLog(`${name} joined the game`, 'highlight');
+    startGame();
+  });
+
+  socket.on('chess_move', ({ move, fen, pgn }) => {
+    game.load(fen);
+    board.position(fen, false);
+    updateChessUI(pgn);
+    addLog(`${opponentName}: ${move.san || move.from + move.to}`);
+  });
+
+  socket.on('opponent_marked', ({ index }) => {
+    // For future: show opponent's board
+  });
+
+  socket.on('game_over', ({ reason, winner, winnerId, lines, loserName }) => {
+    endGame(reason, winner, winnerId, lines, loserName);
+  });
+
+  socket.on('opponent_disconnected', () => {
+    addLog('Opponent disconnected', 'warn');
+    showMsg('Opponent disconnected', 'error');
+  });
+}
+
+// ── LOBBY ──
+function setMsg(txt, cls = '') {
+  const el = document.getElementById('lobbyMsg');
+  el.textContent = txt;
+  el.className = 'lobby-msg ' + cls;
+}
+
+async function createGame() {
+  const name = document.getElementById('createName').value.trim();
+  if (!name) return setMsg('Enter your name', 'error');
+  myName = name;
+  initSocket();
+  socket.emit('create_room', { name }, ({ roomId: rid, color }) => {
+    roomId = rid;
+    myColor = color;
+    document.getElementById('lobbyCard').style.display = 'none';
+    const wb = document.getElementById('waitingBox');
+    wb.classList.add('show');
+    document.getElementById('displayCode').textContent = rid;
+    document.getElementById('headerCode').textContent = rid;
+    addLog('Room created, waiting for opponent…', 'warn');
+  });
+}
+
+function joinGame() {
+  const name = document.getElementById('joinName').value.trim();
+  const code = document.getElementById('joinCode').value.trim().toUpperCase();
+  if (!name) return setMsg('Enter your name', 'error');
+  if (!code || code.length < 4) return setMsg('Enter a valid room code', 'error');
+  myName = name;
+  initSocket();
+  socket.emit('join_room', { roomId: code, name }, (res) => {
+    if (res.error) return setMsg(res.error, 'error');
+    roomId = code;
+    myColor = res.color;
+    opponentName = res.opponentName;
+    document.getElementById('headerCode').textContent = code;
+    startGame();
+  });
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(roomId).catch(() => {});
+  const btn = document.querySelector('.copy-btn');
+  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy code', 1500); }
+}
+
+// ── GAME START ──
+function startGame() {
+  gameActive = true;
+  document.getElementById('lobbyScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
+
+  // Player badges
+  const whiteName = myColor === 'white' ? myName : opponentName;
+  const blackName = myColor === 'black' ? myName : opponentName;
+  document.getElementById('badge-white-name').textContent = whiteName + (myColor === 'white' ? ' (you)' : '');
+  document.getElementById('badge-black-name').textContent = blackName + (myColor === 'black' ? ' (you)' : '');
+
+  // Chess
+  game = new Chess();
+  board = Chessboard('chessboard', {
+    position: 'start',
+    draggable: true,
+    orientation: myColor,
+    pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: () => board.position(game.fen())
+  });
+
+  updateChessUI();
+  buildBingoCard();
+  addLog('Game started! Good luck.', 'highlight');
+}
+
+// ── CHESS LOGIC ──
+function onDragStart(source, piece) {
+  if (!gameActive) return false;
+  if (game.game_over()) return false;
+  if (myColor === 'white' && piece.search(/^b/) !== -1) return false;
+  if (myColor === 'black' && piece.search(/^w/) !== -1) return false;
+  if (game.turn() !== myColor[0]) return false;
+}
+
+function onDrop(source, target) {
+  const move = game.move({ from: source, to: target, promotion: 'q' });
+  if (move === null) return 'snapback';
+
+  socket.emit('chess_move', {
+    move,
+    fen: game.fen(),
+    pgn: game.pgn()
+  });
+
+  updateChessUI(game.pgn());
+  addLog(`You: ${move.san}`);
+
+  if (game.in_checkmate()) {
+    setTimeout(() => socket.emit('claim_checkmate'), 100);
+  }
+}
+
+function updateChessUI(pgn) {
+  const turn = game.turn() === 'w' ? 'White' : 'Black';
+  const myTurn = game.turn() === myColor[0];
+  document.getElementById('chessTurnLabel').textContent = myTurn ? 'Your turn' : `${turn} to move`;
+
+  const wBadge = document.getElementById('badge-white');
+  const bBadge = document.getElementById('badge-black');
+  wBadge.classList.toggle('active-turn', game.turn() === 'w');
+  bBadge.classList.toggle('active-turn', game.turn() === 'b');
+
+  if (pgn) {
+    const hist = game.history();
+    let html = '';
+    for (let i = 0; i < hist.length; i += 2) {
+      html += `<span style="color:var(--text3)">${Math.floor(i/2)+1}.</span> ${hist[i]} ${hist[i+1] || ''} `;
+    }
+    const mh = document.getElementById('moveHistory');
+    mh.innerHTML = html || '—';
+    mh.scrollTop = mh.scrollHeight;
+  }
+}
+
+// ── BINGO ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildBingoCard() {
+  bingoBoard = shuffle(ALL_EVENTS).slice(0, 24);
+  bingoBoard.splice(12, 0, { icon: '♚', label: 'FREE\nSPACE', free: true });
+  marked = new Set([12]);
+  socket.emit('register_board', { board: bingoBoard });
+  renderBingo();
+}
+
+function toggleCell(i) {
+  if (!gameActive) return;
+  if (bingoBoard[i].free) return;
+  if (marked.has(i)) marked.delete(i);
+  else marked.add(i);
+  renderBingo();
+  socket.emit('mark_square', { index: i });
+  checkBingo();
+}
+
+function checkBingo() {
+  const lines = [];
+  for (let r = 0; r < 5; r++) lines.push([0,1,2,3,4].map(c => r*5+c));
+  for (let c = 0; c < 5; c++) lines.push([0,1,2,3,4].map(r => r*5+c));
+  lines.push([0,6,12,18,24]);
+  lines.push([4,8,12,16,20]);
+
+  const winning = lines.filter(l => l.every(i => marked.has(i)));
+  const winCells = new Set(winning.flat());
+
+  document.querySelectorAll('.cell').forEach((c, i) => {
+    c.classList.toggle('bingo-line', winCells.has(i) && marked.has(i));
+  });
+
+  if (winning.length > 0) {
+    socket.emit('claim_bingo', { lines: winning });
+  }
+}
+
+function renderBingo() {
+  const grid = document.getElementById('bingoGrid');
+  grid.innerHTML = bingoBoard.map((ev, i) => {
+    const isMarked = marked.has(i);
+    const isFree = ev.free;
+    const lines = ev.label.split('\n');
+    return `<div class="cell${isFree ? ' free-cell' : ''}${isMarked ? ' marked' : ''}"
+      onclick="toggleCell(${i})" title="${ev.desc || ''}">
+      <span class="check">✓</span>
+      <span class="cell-icon">${ev.icon}</span>
+      <span class="cell-text">${lines.map(l => `<span style="display:block">${l}</span>`).join('')}</span>
+    </div>`;
+  }).join('');
+  const count = marked.size - 1;
+  document.getElementById('bingoStatus').textContent = `${count} square${count !== 1 ? 's' : ''} marked`;
+}
+
+// ── GAME OVER ──
+function endGame(reason, winner, winnerId, lines, loserName) {
+  gameActive = false;
+  const iWon = winnerId === socket.id;
+  const overlay = document.getElementById('gameOverOverlay');
+  const icons = { bingo: '🎯', checkmate: '♛', resign: '🏳️' };
+  const titles = iWon ? 'You Win!' : `${winner} Wins`;
+
+  let msg = '';
+  if (reason === 'checkmate') msg = iWon ? 'Checkmate! Your opponent\'s king has nowhere to go.' : `${winner} delivered checkmate.`;
+  else if (reason === 'bingo') msg = iWon ? 'BINGO! You completed a line before anyone got checkmate.' : `${winner} completed a bingo line!`;
+  else if (reason === 'resign') msg = iWon ? `${loserName} resigned. Well played.` : 'You resigned.';
+
+  document.getElementById('gameOverIcon').textContent = icons[reason] || '♟';
+  document.getElementById('gameOverTitle').textContent = titles;
+  document.getElementById('gameOverMsg').textContent = msg;
+  overlay.classList.add('show');
+  addLog(msg, iWon ? 'highlight' : 'warn');
+}
+
+function resign() {
+  if (!gameActive) return;
+  if (!confirm('Are you sure you want to resign?')) return;
+  socket.emit('resign');
+}
+
+// ── LOG ──
+function addLog(msg, cls = '') {
+  const el = document.getElementById('logEntries');
+  if (!el) return;
+  const now = new Date();
+  const ts = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'log-entry' + (cls ? ' ' + cls : '');
+  div.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function showMsg(txt, cls = '') {
+  setMsg(txt, cls);
+}
+
+// Auto-uppercase room code input
+document.getElementById('joinCode').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+});
+</script>
+</body>
+</html>
