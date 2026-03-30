@@ -71,7 +71,7 @@ body::after {
   line-height: 1;
 }
 .logo h1 em { color: var(--gold); font-style: normal; }
-.logo p { font-size: 11px; letter-spacing: 0.18em; color: var(--text3); margin-top: 8px; text-transform: uppercase; }
+.logo p { font-size: 11px; letter-spacing: 0.18em; color: var(--text2); margin-top: 8px; text-transform: uppercase; }
 
 .lobby-card {
   background: var(--bg2);
@@ -88,7 +88,7 @@ body::after {
   color: var(--text);
 }
 .form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 10px; letter-spacing: 0.12em; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; }
+.form-group label { display: block; font-size: 10px; letter-spacing: 0.12em; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; }
 .form-group input {
   width: 100%;
   background: var(--bg3);
@@ -102,11 +102,11 @@ body::after {
   transition: border-color 0.15s;
 }
 .form-group input:focus { border-color: var(--gold-dim); }
-.form-group input::placeholder { color: var(--text3); }
+.form-group input::placeholder { color: var(--text2); }
 
 .divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
 .divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
-.divider span { font-size: 11px; color: var(--text3); }
+.divider span { font-size: 11px; color: var(--text2); }
 
 .btn {
   font-family: 'DM Mono', monospace;
@@ -121,11 +121,11 @@ body::after {
 .btn-gold { background: var(--gold); border: none; color: #0d0b08; }
 .btn-gold:hover { background: #d4b05a; transform: translateY(-1px); }
 .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
-.btn-outline:hover { border-color: var(--text3); color: var(--text); background: rgba(255,255,255,0.04); }
+.btn-outline:hover { border-color: var(--text2); color: var(--text); background: rgba(255,255,255,0.04); }
 .btn:active { transform: scale(0.98) !important; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
-.lobby-msg { font-size: 12px; color: var(--text3); text-align: center; margin-top: 1rem; min-height: 18px; }
+.lobby-msg { font-size: 12px; color: var(--text2); text-align: center; margin-top: 1rem; min-height: 18px; }
 .lobby-msg.error { color: var(--red); }
 .lobby-msg.success { color: var(--green-text); }
 
@@ -150,7 +150,7 @@ body::after {
   letter-spacing: 6px;
   color: var(--gold);
 }
-.waiting-box p { font-size: 11px; color: var(--text3); letter-spacing: 0.08em; }
+.waiting-box p { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; }
 .copy-btn {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
@@ -161,7 +161,7 @@ body::after {
   border-radius: 6px;
   cursor: pointer;
 }
-.copy-btn:hover { color: var(--text); border-color: var(--text3); }
+.copy-btn:hover { color: var(--text); border-color: var(--text2); }
 .pulse { animation: pulse 1.5s infinite ease-in-out; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
@@ -211,10 +211,10 @@ body::after {
   cursor: pointer;
   border: 1px solid var(--border2);
   background: transparent;
-  color: var(--text3);
+  color: var(--text2);
   transition: all 0.12s;
 }
-.sm-btn:hover { color: var(--text); border-color: var(--text3); }
+.sm-btn:hover { color: var(--text); border-color: var(--text2); }
 .sm-btn.danger:hover { color: var(--red); border-color: var(--red); }
 
 .game-body {
@@ -231,20 +231,21 @@ body::after {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  flex: 0 0 auto;
-  border-right: 1px solid var(--border);
+  flex: 1 1 50%;
+  border-left: 1px solid var(--border);
   gap: 12px;
+  min-width: 0;
 }
-#chessboard { width: clamp(240px, 42vw, 460px) !important; }
+#chessboard { width: min(calc(50vw - 3rem), 560px) !important; }
 .board-label {
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: var(--text3);
+  color: var(--text2);
   text-transform: uppercase;
   text-align: center;
 }
 .move-history {
-  width: clamp(240px, 42vw, 460px);
+  width: min(calc(50vw - 3rem), 560px);
   max-height: 80px;
   overflow-y: auto;
   background: var(--bg2);
@@ -252,63 +253,118 @@ body::after {
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 11px;
-  color: var(--text3);
+  color: var(--text2);
   line-height: 1.6;
   scrollbar-width: thin;
 }
 
 /* ── BINGO PANEL ── */
 .bingo-panel {
-  flex: 1;
+  flex: 1 1 50%;
   display: flex;
   flex-direction: column;
-  padding: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
   overflow-y: auto;
   min-width: 0;
+  max-width: none;
 }
+
 .bingo-panel h3 {
   font-family: 'Playfair Display', serif;
   font-size: 15px; font-weight: 700;
   margin-bottom: 4px;
 }
-.bingo-subtitle { font-size: 10px; color: var(--text3); margin-bottom: 1rem; letter-spacing: 0.06em; }
+.bingo-subtitle { font-size: 10px; color: var(--text2); margin-bottom: 1rem; letter-spacing: 0.06em; }
+
+.bingo-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
 
 .bingo-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  margin-bottom: 1rem;
+  display: inline-grid;
+  grid-template-columns: repeat(5, 112px);
+  grid-template-rows: repeat(5, 112px);
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 5px;
 }
-.cell {
-  aspect-ratio: 1;
+
+.bingo-cell {
+  width: 112px !important;
+  height: 112px !important;
+  max-width: 112px !important;
+  max-height: 112px !important;
+  min-width: 112px !important;
+  min-height: 112px !important;
+  box-sizing: border-box !important;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  padding: 4px 2px;
+  padding: 6px 4px;
   position: relative; overflow: hidden;
-  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
   background: var(--bg2);
   -webkit-tap-highlight-color: transparent;
-  min-height: 54px;
 }
-.cell:hover:not(.free-cell) { border-color: var(--border2); background: var(--bg3); transform: scale(1.03); }
-.cell:active:not(.free-cell) { transform: scale(0.96); }
-.cell.marked { background: var(--bg3); border-color: var(--gold-dim); }
-.cell.marked::after { content: ''; position: absolute; inset: 0; background: var(--gold-bg); pointer-events: none; }
-.cell.bingo-line { border-color: var(--green) !important; background: rgba(74,158,110,0.1) !important; }
-.cell.free-cell { cursor: default; border-color: var(--gold-dim); background: var(--gold-bg); }
-.cell-icon { font-size: clamp(13px, 2.5vw, 18px); line-height: 1; margin-bottom: 2px; position: relative; z-index: 1; }
-.cell-text { font-size: clamp(6px, 1.2vw, 8px); line-height: 1.25; color: var(--text3); position: relative; z-index: 1; }
-.cell.marked .cell-text { color: var(--text2); }
-.cell.free-cell .cell-text { color: var(--gold); font-weight: 500; }
-.check { position: absolute; top: 3px; right: 4px; font-size: 8px; color: var(--gold); opacity: 0; z-index: 2; }
-.cell.marked .check { opacity: 1; }
-.cell.free-cell .check { opacity: 0 !important; }
 
-.bingo-status { font-size: 11px; color: var(--text3); margin-bottom: 0.5rem; }
+.bingo-cell:hover:not(.free-cell) { background: var(--bg3); border-color: var(--border2); transform: scale(1.04); z-index: 1; }
+.bingo-cell:active:not(.free-cell) { transform: scale(0.96); }
+
+.bingo-cell.marked {
+  background: rgba(201,168,76,0.22);
+  border-color: var(--gold);
+}
+.bingo-cell.bingo-line {
+  background: rgba(74,158,110,0.25) !important;
+  border-color: var(--green) !important;
+}
+.bingo-cell.free-cell {
+  cursor: default;
+  background: rgba(201,168,76,0.1);
+  border-color: var(--gold-dim);
+}
+.bingo-cell-icon {
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 6px;
+  position: relative; z-index: 1;
+}
+.bingo-cell-text {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--text2);
+  position: relative; z-index: 1;
+}
+.bingo-cell.marked .bingo-cell-text { color: var(--text); }
+.bingo-cell.free-cell .bingo-cell-text { color: var(--gold); font-weight: 500; font-size: 12px; }
+.bingo-check {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: var(--gold);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.bingo-cell.marked .bingo-check { opacity: 0.25; }
+.bingo-cell.free-cell .bingo-check { opacity: 0 !important; }
+
+.bingo-status { font-size: 11px; color: var(--text2); margin-top: 0.75rem; }
+
+.bingo-status { font-size: 11px; color: var(--text2); margin-bottom: 0.5rem; }
 
 /* ── GAME OVER OVERLAY ── */
 #gameOverOverlay {
@@ -350,20 +406,20 @@ body::after {
   padding-top: 0.8rem;
   border-top: 1px solid var(--border);
 }
-.event-log-title { font-size: 9px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; }
+.event-log-title { font-size: 9px; letter-spacing: 0.12em; color: var(--text2); text-transform: uppercase; margin-bottom: 6px; }
 .log-entries { max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; scrollbar-width: thin; }
-.log-entry { font-size: 10px; color: var(--text3); line-height: 1.4; }
-.log-entry .ts { color: var(--text3); opacity: 0.5; margin-right: 4px; }
+.log-entry { font-size: 10px; color: var(--text2); line-height: 1.4; }
+.log-entry .ts { color: var(--text2); opacity: 0.5; margin-right: 4px; }
 .log-entry.highlight { color: var(--green-text); }
 .log-entry.warn { color: var(--gold); }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
-  .game-body { flex-direction: column; }
-  .chess-panel { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
-  #chessboard { width: min(85vw, 340px) !important; }
-  .move-history { width: min(85vw, 340px); }
-  .bingo-panel { padding: 1rem; }
+  .game-body { flex-direction: column; align-items: center; }
+  .chess-panel { border-left: none; border-top: 1px solid var(--border); padding: 1rem; width: 100%; flex: none; }
+  #chessboard { width: min(85vw, 400px) !important; }
+  .move-history { width: min(85vw, 400px); }
+  .bingo-panel { padding: 1rem; width: 100%; flex: none; }
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .fade-in { animation: fadeIn 0.4s ease both; }
@@ -402,7 +458,7 @@ body::after {
   </div>
 
   <div class="waiting-box" id="waitingBox">
-    <p class="pulse" style="font-size:11px;color:var(--text3);letter-spacing:0.1em">WAITING FOR OPPONENT</p>
+    <p class="pulse" style="font-size:11px;color:var(--text2);letter-spacing:0.1em">WAITING FOR OPPONENT</p>
     <div class="room-code" id="displayCode"></div>
     <p>Share this code with your opponent</p>
     <button class="copy-btn" onclick="copyCode()">Copy code</button>
@@ -430,24 +486,26 @@ body::after {
   </div>
 
   <div class="game-body">
-    <!-- Chess -->
-    <div class="chess-panel">
-      <div class="board-label" id="chessTurnLabel">White to move</div>
-      <div id="chessboard"></div>
-      <div class="move-history" id="moveHistory">—</div>
-    </div>
-
     <!-- Bingo -->
     <div class="bingo-panel">
       <h3>Your Bingo Card</h3>
       <p class="bingo-subtitle">mark events as they happen on the board</p>
+      <div class="bingo-card">
+        <div class="bingo-grid" id="bingoGrid"></div>
+      </div>
       <p class="bingo-status" id="bingoStatus">0 squares marked</p>
-      <div class="bingo-grid" id="bingoGrid"></div>
 
       <div class="event-log">
         <div class="event-log-title">Game log</div>
         <div class="log-entries" id="logEntries"></div>
       </div>
+    </div>
+
+    <!-- Chess -->
+    <div class="chess-panel">
+      <div class="board-label" id="chessTurnLabel">White to move</div>
+      <div id="chessboard"></div>
+      <div class="move-history" id="moveHistory">—</div>
     </div>
   </div>
 </div>
@@ -606,7 +664,7 @@ function startGame() {
     position: 'start',
     draggable: true,
     orientation: myColor,
-    pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
+    pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg',
     onDragStart: onDragStart,
     onDrop: onDrop,
     onSnapEnd: () => board.position(game.fen())
@@ -658,7 +716,7 @@ function updateChessUI(pgn) {
     const hist = game.history();
     let html = '';
     for (let i = 0; i < hist.length; i += 2) {
-      html += `<span style="color:var(--text3)">${Math.floor(i/2)+1}.</span> ${hist[i]} ${hist[i+1] || ''} `;
+      html += `<span style="color:var(--text2)">${Math.floor(i/2)+1}.</span> ${hist[i]} ${hist[i+1] || ''} `;
     }
     const mh = document.getElementById('moveHistory');
     mh.innerHTML = html || '—';
@@ -704,7 +762,7 @@ function checkBingo() {
   const winning = lines.filter(l => l.every(i => marked.has(i)));
   const winCells = new Set(winning.flat());
 
-  document.querySelectorAll('.cell').forEach((c, i) => {
+  document.querySelectorAll('.bingo-cell').forEach((c, i) => {
     c.classList.toggle('bingo-line', winCells.has(i) && marked.has(i));
   });
 
@@ -719,11 +777,11 @@ function renderBingo() {
     const isMarked = marked.has(i);
     const isFree = ev.free;
     const lines = ev.label.split('\n');
-    return `<div class="cell${isFree ? ' free-cell' : ''}${isMarked ? ' marked' : ''}"
+    return `<div class="bingo-cell${isFree ? ' free-cell' : ''}${isMarked ? ' marked' : ''}"
       onclick="toggleCell(${i})" title="${ev.desc || ''}">
-      <span class="check">✓</span>
-      <span class="cell-icon">${ev.icon}</span>
-      <span class="cell-text">${lines.map(l => `<span style="display:block">${l}</span>`).join('')}</span>
+      <span class="bingo-check">✕</span>
+      <span class="bingo-cell-icon">${ev.icon}</span>
+      <span class="bingo-cell-text">${lines.map(l => `<span style="display:block">${l}</span>`).join('')}</span>
     </div>`;
   }).join('');
   const count = marked.size - 1;
