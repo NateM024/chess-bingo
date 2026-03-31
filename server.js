@@ -69,12 +69,12 @@ io.on('connection', (socket) => {
     console.log(`${name} joined room ${roomId}`);
   });
 
-  // ── Player sends their bingo board (generated client-side) ──
-  socket.on('register_board', ({ board }) => {
+  // ── Player sends their bingo board event IDs ──
+  socket.on('register_board', ({ eventIds }) => {
     const room = rooms.get(socket.data.roomId);
     if (!room) return;
     if (!room.bingo) room.bingo = {};
-    room.bingo[socket.id] = { board, marked: new Set([12]) };
+    room.bingo[socket.id] = { eventIds, marked: new Set([12]) };
   });
 
   // ── Chess move ──
@@ -90,20 +90,14 @@ io.on('connection', (socket) => {
     socket.to(roomId).emit('chess_move', { move, fen, pgn });
   });
 
-  // ── Bingo square marked ──
-  socket.on('mark_square', ({ index }) => {
+  // ── Events auto-detected by client ──
+  socket.on('events_detected', ({ triggered }) => {
     const roomId = socket.data.roomId;
     const room = rooms.get(roomId);
     if (!room || room.gameOver) return;
-
-    if (room.bingo && room.bingo[socket.id]) {
-      const p = room.bingo[socket.id];
-      if (p.marked.has(index)) p.marked.delete(index);
-      else p.marked.add(index);
-    }
-
-    // Let the other player see what you marked (for spectating)
-    socket.to(roomId).emit('opponent_marked', { index });
+    // Relay event IDs to the other player so they mark matching cells on their card
+    const eventIds = triggered.map(t => t.eventId).filter(Boolean);
+    socket.to(roomId).emit('events_detected', { eventIds });
   });
 
   // ── Bingo win declared ──

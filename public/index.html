@@ -227,16 +227,24 @@ body::after {
 /* ── CHESS PANEL ── */
 .chess-panel {
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1 1 50%;
+  border-left: 1px solid var(--border);
+  min-width: 0;
+  overflow: hidden;
+}
+.chess-main {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  flex: 1 1 50%;
-  border-left: 1px solid var(--border);
-  gap: 12px;
+  padding: 1.5rem 1rem 1.5rem 1.5rem;
+  gap: 10px;
+  flex: 1;
   min-width: 0;
 }
-#chessboard { width: min(calc(50vw - 3rem), 560px) !important; }
+#chessboard { width: min(calc(50vw - 12rem), 480px) !important; }
 .board-label {
   font-size: 10px;
   letter-spacing: 0.12em;
@@ -244,19 +252,105 @@ body::after {
   text-transform: uppercase;
   text-align: center;
 }
-.move-history {
-  width: min(calc(50vw - 3rem), 560px);
-  max-height: 80px;
-  overflow-y: auto;
+
+.move-list-wrap {
+  width: min(calc(50vw - 12rem), 480px);
+  overflow-x: auto;
+  overflow-y: hidden;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.6;
   scrollbar-width: thin;
+  flex-shrink: 0;
+  height: 36px;
 }
+.move-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0 6px;
+  height: 36px;
+  gap: 2px;
+  width: max-content;
+}
+.move-list .mn {
+  color: var(--text3);
+  font-size: 11px;
+  padding: 0 2px 0 6px;
+  flex-shrink: 0;
+}
+.move-list .mn:first-child { padding-left: 2px; }
+.move-list .mv {
+  padding: 3px 5px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 12px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+  flex-shrink: 0;
+}
+.move-list .mv:hover { background: var(--bg3); color: var(--text); }
+.move-list .mv.active { background: var(--gold-bg); color: var(--gold); }
+
+.move-nav {
+  display: flex;
+  gap: 4px;
+  width: min(calc(50vw - 12rem), 480px);
+}
+.nav-btn {
+  flex: 1;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  padding: 5px 0;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.nav-btn:hover { background: var(--bg3); color: var(--text); }
+.nav-btn:active { transform: scale(0.93); }
+
+.chess-sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 8px;
+  width: 140px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+}
+.sidebar-players {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-player {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text2);
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+.sidebar-player.active-turn {
+  border-color: var(--gold-dim);
+  background: var(--gold-bg);
+  color: var(--gold);
+}
+.resign-btn {
+  width: 100%;
+  font-size: 11px;
+  padding: 7px;
+  color: var(--red) !important;
+  border-color: var(--red) !important;
+  opacity: 0.7;
+}
+.resign-btn:hover { opacity: 1; background: var(--red-bg) !important; }
 
 /* ── BINGO PANEL ── */
 .bingo-panel {
@@ -308,7 +402,7 @@ body::after {
   text-align: center;
   border: 1px solid var(--border);
   border-radius: 8px;
-  cursor: pointer;
+  cursor: default;
   padding: 6px 4px;
   position: relative; overflow: hidden;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
@@ -316,8 +410,8 @@ body::after {
   -webkit-tap-highlight-color: transparent;
 }
 
-.bingo-cell:hover:not(.free-cell) { background: var(--bg3); border-color: var(--border2); transform: scale(1.04); z-index: 1; }
-.bingo-cell:active:not(.free-cell) { transform: scale(0.96); }
+
+
 
 .bingo-cell.marked {
   background: rgba(201,168,76,0.22);
@@ -416,9 +510,10 @@ body::after {
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
   .game-body { flex-direction: column; align-items: center; }
-  .chess-panel { border-left: none; border-top: 1px solid var(--border); padding: 1rem; width: 100%; flex: none; }
+  .chess-panel { border-left: none; border-top: 1px solid var(--border); width: 100%; flex-direction: column; align-items: center; }
+  .chess-main { padding: 1rem; }
+  .chess-sidebar { max-width: 100%; width: min(85vw, 400px); border-left: none; border-top: 1px solid var(--border); padding: 1rem; }
   #chessboard { width: min(85vw, 400px) !important; }
-  .move-history { width: min(85vw, 400px); }
   .bingo-panel { padding: 1rem; width: 100%; flex: none; }
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -481,7 +576,6 @@ body::after {
     </div>
     <div class="header-btns">
       <button class="sm-btn" onclick="copyCode()">Room: <span id="headerCode"></span></button>
-      <button class="sm-btn danger" onclick="resign()">Resign</button>
     </div>
   </div>
 
@@ -495,17 +589,37 @@ body::after {
       </div>
       <p class="bingo-status" id="bingoStatus">0 squares marked</p>
 
-      <div class="event-log">
-        <div class="event-log-title">Game log</div>
-        <div class="log-entries" id="logEntries"></div>
-      </div>
     </div>
 
     <!-- Chess -->
     <div class="chess-panel">
-      <div class="board-label" id="chessTurnLabel">White to move</div>
-      <div id="chessboard"></div>
-      <div class="move-history" id="moveHistory">—</div>
+      <div class="chess-main">
+        <div class="board-label" id="chessTurnLabel">White to move</div>
+        <div id="chessboard"></div>
+        <div class="move-list-wrap">
+          <div class="move-list" id="moveList"></div>
+        </div>
+        <div class="move-nav">
+          <button class="nav-btn" onclick="goToMove(0)" title="Start">⏮</button>
+          <button class="nav-btn" onclick="goToMove(viewingMove - 1)" title="Previous">◀</button>
+          <button class="nav-btn" onclick="goToMove(viewingMove + 1)" title="Next">▶</button>
+          <button class="nav-btn" onclick="goToMove(-1)" title="Latest">⏭</button>
+        </div>
+      </div>
+      <div class="chess-sidebar">
+        <div class="sidebar-players">
+          <div class="sidebar-player" id="sidebar-black">
+            <span class="dot dot-black"></span>
+            <span id="sidebar-black-name">Black</span>
+          </div>
+          <div class="sidebar-player" id="sidebar-white">
+            <span class="dot dot-white"></span>
+            <span id="sidebar-white-name">White</span>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <button class="btn btn-outline resign-btn" onclick="resign()">Resign</button>
+      </div>
     </div>
   </div>
 </div>
@@ -528,32 +642,130 @@ body::after {
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
+// ── BOARD HELPERS ──
+function boardFlat(g) { return g.board().flat().filter(Boolean); }
+function countPiece(g, type, color) { return boardFlat(g).filter(s => s.type===type && (!color||s.color===color)).length; }
+function hasPiece(g, type, color) { return boardFlat(g).some(s => s.type===type && s.color===color); }
+function isEndgame(g) { const q=countPiece(g,'q'); if(q===0) return true; return q<=1 && (countPiece(g,'b')+countPiece(g,'n'))<=2; }
+function knightAttacks(sq) {
+  const files='abcdefgh', f=files.indexOf(sq[0]), r=parseInt(sq[1]);
+  return [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]
+    .map(([df,dr])=>{const nf=f+df,nr=r+dr; return(nf>=0&&nf<=7&&nr>=1&&nr<=8)?files[nf]+nr:null;})
+    .filter(Boolean);
+}
+function removePieceFromFen(fen, square) {
+  try {
+    const parts = fen.split(' ');
+    const rows = parts[0].split('/');
+    const file = square.charCodeAt(0)-97;
+    const rank = 8-parseInt(square[1]);
+    let row = '';
+    for(const ch of rows[rank]) { if(/\d/.test(ch)) row+='1'.repeat(+ch); else row+=ch; }
+    const arr = row.split(''); arr[file]='1'; let comp='',cnt=0;
+    for(const ch of arr) { if(ch==='1') cnt++; else { if(cnt){comp+=cnt;cnt=0;} comp+=ch; } }
+    if(cnt) comp+=cnt;
+    rows[rank]=comp; parts[0]=rows.join('/');
+    return parts.join(' ');
+  } catch(e){ return null; }
+}
+
 // ── BINGO EVENTS ──
+// detect(move, gameBefore, gameAfter) → true/false
+// Only events that can be reliably auto-detected from chess.js are included.
 const ALL_EVENTS = [
-  { icon: "♟", label: "Pawn\npromotes", desc: "Pawn reaches back rank" },
-  { icon: "♜", label: "Rook\nlifts", desc: "Rook moves to open file" },
-  { icon: "0-0", label: "Kingside\ncastle", desc: "Either player castles kingside" },
-  { icon: "0-0-0", label: "Queenside\ncastle", desc: "Either player castles queenside" },
-  { icon: "♝", label: "Bishop\npair won", desc: "Player captures one of two bishops" },
-  { icon: "⚔", label: "Piece\nsacrifice", desc: "Material given up intentionally" },
-  { icon: "e.p.", label: "En\npassant", desc: "En passant capture is made" },
-  { icon: "♛", label: "Queen\ntrade", desc: "Both queens are exchanged" },
-  { icon: "✝", label: "Discovered\ncheck", desc: "Piece moves, revealing check" },
-  { icon: "++", label: "Double\ncheck", desc: "Two pieces check simultaneously" },
-  { icon: "♞", label: "Knight\nfork", desc: "Knight attacks two pieces at once" },
-  { icon: "Z", label: "Zugzwang", desc: "Player forced into a bad move" },
-  { icon: "?!", label: "Blunder\nmade", desc: "A clear losing move is played" },
-  { icon: "→", label: "Passed\npawn", desc: "Pawn with no opposing pawns" },
-  { icon: "♔", label: "King\nactivates", desc: "King moves in the endgame" },
-  { icon: "△△", label: "Pawn\nchain", desc: "Three or more connected pawns" },
-  { icon: "★", label: "Outpost\ncreated", desc: "Knight on protected outpost" },
-  { icon: "♖7", label: "Rook on\n7th rank", desc: "Rook reaches the 7th rank" },
-  { icon: "◈", label: "Skewer\nattack", desc: "A valuable piece is skewered" },
-  { icon: "▲▲▲", label: "Pawn\nstorm", desc: "Three pawns advance same wing" },
-  { icon: "½", label: "Stalemate\nnear miss", desc: "Stalemate threat is avoided" },
-  { icon: "♞♞", label: "Both knights\nlive", desc: "Both knights remain in endgame" },
-  { icon: "○", label: "Isolated\npawn", desc: "Pawn has no adjacent pawns" },
-  { icon: "↺", label: "Threefold\nrep.", desc: "Same position repeated 3 times" },
+  { id:'castle_k',       icon:'0-0',   label:'Kingside\ncastle',          desc:'Either player castles kingside',                    detect:(m)=>m.flags.includes('k') },
+  { id:'castle_q',       icon:'0-0-0', label:'Queenside\ncastle',         desc:'Either player castles queenside',                   detect:(m)=>m.flags.includes('q') },
+  { id:'promote',        icon:'♟↑',   label:'Pawn\npromotes',            desc:'A pawn reaches the back rank',                      detect:(m)=>m.flags.includes('p') },
+  { id:'en_passant',     icon:'e.p.',  label:'En\npassant',               desc:'En passant capture is made',                        detect:(m)=>m.flags.includes('e') },
+  { id:'check',          icon:'+',     label:'Check\ngiven',              desc:'A player delivers check',                           detect:(_,__,a)=>a.in_check() },
+  { id:'double_check',   icon:'++',    label:'Double\ncheck',             desc:'Two pieces give check simultaneously',
+    detect:(m,_,a)=>{
+      if(!a.in_check()) return false;
+      const fen2=removePieceFromFen(a.fen(),m.to);
+      if(!fen2) return false;
+      try{ return new Chess(fen2).in_check(); }catch(e){ return false; }
+    }
+  },
+  { id:'discovered_check',icon:'↗+',  label:'Discovered\ncheck',         desc:'A piece moves to reveal check from another piece',
+    detect:(m,_,a)=>{
+      if(!a.in_check()) return false;
+      const fen2=removePieceFromFen(a.fen(),m.to);
+      if(!fen2) return false;
+      try{ const t=new Chess(fen2); return t.in_check() && !new Chess(a.fen()).in_check()===false; }catch(e){ return false; }
+      // simpler: still in check without moved piece AND moved piece is not a queen/rook/bishop directly
+    }
+  },
+  { id:'capture',        icon:'✕',     label:'Any\ncapture',              desc:'Any piece is taken',                                detect:(m)=>!!m.captured },
+  { id:'queen_trade',    icon:'♛♛',   label:'Queen\ntrade',              desc:'Both queens leave the board',
+    detect:(m,_,a)=>m.captured==='q' && !hasPiece(a,'q','w') && !hasPiece(a,'q','b')
+  },
+  { id:'bishop_pair_lost',icon:'♝off', label:'Bishop pair\nlost',        desc:'A player loses one of their two bishops',
+    detect:(m,b,a)=>{ if(m.captured!=='b') return false; const lc=m.color==='w'?'b':'w'; return countPiece(b,'b',lc)===2&&countPiece(a,'b',lc)===1; }
+  },
+  { id:'rook_7th',       icon:'♜7',   label:'Rook on\n7th rank',         desc:'A rook reaches the opponent\'s 7th rank',
+    detect:(m)=>m.piece==='r' && m.to[1]===(m.color==='w'?'7':'2')
+  },
+  { id:'back_rank_check',icon:'♜1+',  label:'Back rank\ncheck',          desc:'Rook or queen delivers check on back rank',
+    detect:(m,_,a)=>a.in_check() && (m.piece==='r'||m.piece==='q') && m.to[1]===(m.color==='w'?'8':'1')
+  },
+  { id:'knight_fork',    icon:'♞⑉',   label:'Knight\nfork',              desc:'A knight attacks two or more valuable pieces',
+    detect:(m,_,a)=>{
+      if(m.piece!=='n') return false;
+      const opp=m.color==='w'?'b':'w';
+      const hits=boardFlat(a).filter(s=>s.color===opp&&['q','r','b','n','k'].includes(s.type)&&knightAttacks(m.to).includes(s.square));
+      return hits.length>=2;
+    }
+  },
+  { id:'passed_pawn',    icon:'→♟',   label:'Passed\npawn',              desc:'A pawn with no opposing pawns blocking its path',
+    detect:(m,_,a)=>{
+      if(m.piece!=='p') return false;
+      const opp=m.color==='w'?'b':'w', file=m.to[0], rank=parseInt(m.to[1]);
+      const files='abcdefgh', fi=files.indexOf(file);
+      const adjFiles=[files[fi-1],file,files[fi+1]].filter(Boolean);
+      const oppPawns=boardFlat(a).filter(s=>s.type==='p'&&s.color===opp);
+      return !oppPawns.some(s=>adjFiles.includes(s.square[0])&&(m.color==='w'?parseInt(s.square[1])>rank:parseInt(s.square[1])<rank));
+    }
+  },
+  { id:'isolated_pawn',  icon:'○♟',   label:'Isolated\npawn',            desc:'A pawn with no friendly pawns on adjacent files',
+    detect:(m,_,a)=>{
+      const files='abcdefgh';
+      const pawns=boardFlat(a).filter(s=>s.type==='p'&&s.color===m.color);
+      return pawns.some(p=>{ const fi=files.indexOf(p.square[0]); const adj=[files[fi-1],files[fi+1]].filter(Boolean); return !pawns.some(q=>q!==p&&adj.includes(q.square[0])); });
+    }
+  },
+  { id:'pawn_chain',     icon:'△△△',  label:'Pawn\nchain',               desc:'Three or more connected pawns diagonally',
+    detect:(m,_,a)=>{
+      const files='abcdefgh', pawns=boardFlat(a).filter(s=>s.type==='p'&&s.color===m.color);
+      return pawns.some(p=>{
+        const fi=files.indexOf(p.square[0]), rank=parseInt(p.square[1]), dir=m.color==='w'?-1:1;
+        const sup=pawns.filter(q=>q.square===(files[fi-1]?(files[fi-1]+(rank+dir)):null)||q.square===(files[fi+1]?(files[fi+1]+(rank+dir)):null));
+        return sup.some(s=>{ const si=files.indexOf(s.square[0]),sr=parseInt(s.square[1]); return pawns.some(q=>q.square===(files[si-1]?(files[si-1]+(sr+dir)):null)||q.square===(files[si+1]?(files[si+1]+(sr+dir)):null)); });
+      });
+    }
+  },
+  { id:'pawn_storm',     icon:'▲▲▲',  label:'Pawn\nstorm',               desc:'Three or more pawns advanced past the midpoint on one wing',
+    detect:(m,_,a)=>{
+      const pawns=boardFlat(a).filter(s=>s.type==='p'&&s.color===m.color);
+      const adv=pawns.filter(p=>m.color==='w'?parseInt(p.square[1])>=5:parseInt(p.square[1])<=4);
+      const kFiles=['e','f','g','h'], qFiles=['a','b','c','d'];
+      return adv.filter(p=>kFiles.includes(p.square[0])).length>=3 || adv.filter(p=>qFiles.includes(p.square[0])).length>=3;
+    }
+  },
+  { id:'both_knights',   icon:'♞♞',   label:'Both knights\nlive',        desc:'Both knights survive into the endgame',
+    detect:(m,_,a)=>isEndgame(a)&&countPiece(a,'n',m.color)===2
+  },
+  { id:'minor_takes_rook',icon:'♞>♜', label:'Minor takes\nrook',         desc:'A bishop or knight captures a rook',
+    detect:(m)=>(m.piece==='b'||m.piece==='n')&&m.captured==='r'
+  },
+  { id:'pawn_takes_piece',icon:'♟>♝', label:'Pawn takes\npiece',         desc:'A pawn captures a bishop, knight, rook, or queen',
+    detect:(m)=>m.piece==='p'&&m.captured&&m.captured!=='p'
+  },
+  { id:'long_diagonal',  icon:'♝⟋',   label:'Long\ndiagonal',            desc:'A bishop occupies a long diagonal square',
+    detect:(m)=>m.piece==='b'&&['a1','b2','c3','d4','e5','f6','g7','h8','a8','b7','c6','d5','e4','f3','g2','h1'].includes(m.to)
+  },
+  { id:'threefold',      icon:'↺',    label:'Threefold\nrepetition',     desc:'The same position occurs three times',
+    detect:(_,__,a)=>a.in_threefold_repetition()
+  },
 ];
 
 // ── STATE ──
@@ -562,11 +774,15 @@ let myColor = null;
 let myName = '';
 let opponentName = '';
 let roomId = '';
-let game; // chess.js
-let board; // chessboard.js
-let bingoBoard = [];
+let game;
+let board;
+let bingoBoard = [];   // array of event objects for this player's card
 let marked = new Set();
+let triggeredIds = new Set(); // event IDs that have fired this game
 let gameActive = false;
+let selectedSquare = null;
+let viewingMove = -1;
+let moveHistory = [];
 
 // ── SOCKET SETUP ──
 function initSocket() {
@@ -579,14 +795,30 @@ function initSocket() {
   });
 
   socket.on('chess_move', ({ move, fen, pgn }) => {
-    game.load(fen);
-    board.position(fen, false);
-    updateChessUI(pgn);
-    addLog(`${opponentName}: ${move.san || move.from + move.to}`);
+    const before = new Chess(game.fen());
+    game.move({ from: move.from, to: move.to, promotion: move.promotion || 'q' });
+    const after = new Chess(game.fen());
+    const fullMove = game.history({ verbose: true }).slice(-1)[0];
+    board.position(game.fen(), false);
+    updateChessUI(game.pgn());
+    addLog(`${opponentName}: ${move.san || move.from+move.to}`);
+    detectAndMarkEvents(fullMove || move, before, after);
   });
 
-  socket.on('opponent_marked', ({ index }) => {
-    // For future: show opponent's board
+  socket.on('events_detected', ({ eventIds }) => {
+    // Opponent detected events — mark matching cells on MY card
+    let changed = false;
+    eventIds.forEach(id => {
+      if (triggeredIds.has(id)) return;
+      triggeredIds.add(id);
+      bingoBoard.forEach((ev, i) => {
+        if (ev.id === id && !marked.has(i)) {
+          marked.add(i);
+          changed = true;
+        }
+      });
+    });
+    if (changed) { renderBingo(); checkBingo(); }
   });
 
   socket.on('game_over', ({ reason, winner, winnerId, lines, loserName }) => {
@@ -595,55 +827,47 @@ function initSocket() {
 
   socket.on('opponent_disconnected', () => {
     addLog('Opponent disconnected', 'warn');
-    showMsg('Opponent disconnected', 'error');
   });
 }
 
 // ── LOBBY ──
-function setMsg(txt, cls = '') {
+function setMsg(txt, cls='') {
   const el = document.getElementById('lobbyMsg');
-  el.textContent = txt;
-  el.className = 'lobby-msg ' + cls;
+  el.textContent = txt; el.className = 'lobby-msg '+cls;
 }
 
 async function createGame() {
   const name = document.getElementById('createName').value.trim();
-  if (!name) return setMsg('Enter your name', 'error');
-  myName = name;
-  initSocket();
+  if (!name) return setMsg('Enter your name','error');
+  myName = name; initSocket();
   socket.emit('create_room', { name }, ({ roomId: rid, color }) => {
-    roomId = rid;
-    myColor = color;
+    roomId = rid; myColor = color;
     document.getElementById('lobbyCard').style.display = 'none';
     const wb = document.getElementById('waitingBox');
     wb.classList.add('show');
     document.getElementById('displayCode').textContent = rid;
     document.getElementById('headerCode').textContent = rid;
-    addLog('Room created, waiting for opponent…', 'warn');
   });
 }
 
 function joinGame() {
   const name = document.getElementById('joinName').value.trim();
   const code = document.getElementById('joinCode').value.trim().toUpperCase();
-  if (!name) return setMsg('Enter your name', 'error');
-  if (!code || code.length < 4) return setMsg('Enter a valid room code', 'error');
-  myName = name;
-  initSocket();
+  if (!name) return setMsg('Enter your name','error');
+  if (!code || code.length < 4) return setMsg('Enter a valid room code','error');
+  myName = name; initSocket();
   socket.emit('join_room', { roomId: code, name }, (res) => {
-    if (res.error) return setMsg(res.error, 'error');
-    roomId = code;
-    myColor = res.color;
-    opponentName = res.opponentName;
+    if (res.error) return setMsg(res.error,'error');
+    roomId = code; myColor = res.color; opponentName = res.opponentName;
     document.getElementById('headerCode').textContent = code;
     startGame();
   });
 }
 
 function copyCode() {
-  navigator.clipboard.writeText(roomId).catch(() => {});
+  navigator.clipboard.writeText(roomId).catch(()=>{});
   const btn = document.querySelector('.copy-btn');
-  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy code', 1500); }
+  if (btn) { btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy code',1500); }
 }
 
 // ── GAME START ──
@@ -652,123 +876,197 @@ function startGame() {
   document.getElementById('lobbyScreen').classList.remove('active');
   document.getElementById('gameScreen').classList.add('active');
 
-  // Player badges
-  const whiteName = myColor === 'white' ? myName : opponentName;
-  const blackName = myColor === 'black' ? myName : opponentName;
-  document.getElementById('badge-white-name').textContent = whiteName + (myColor === 'white' ? ' (you)' : '');
-  document.getElementById('badge-black-name').textContent = blackName + (myColor === 'black' ? ' (you)' : '');
+  const whiteName = myColor==='white' ? myName : opponentName;
+  const blackName = myColor==='black' ? myName : opponentName;
+  document.getElementById('badge-white-name').textContent = whiteName+(myColor==='white'?' (you)':'');
+  document.getElementById('badge-black-name').textContent = blackName+(myColor==='black'?' (you)':'');
+  document.getElementById('sidebar-white-name').textContent = whiteName+(myColor==='white'?' (you)':'');
+  document.getElementById('sidebar-black-name').textContent = blackName+(myColor==='black'?' (you)':'');
 
-  // Chess
   game = new Chess();
-  board = Chessboard('chessboard', {
-    position: 'start',
-    draggable: true,
-    orientation: myColor,
-    pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg',
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onSnapEnd: () => board.position(game.fen())
-  });
-
-  updateChessUI();
   buildBingoCard();
-  addLog('Game started! Good luck.', 'highlight');
+
+  // Defer board init so the DOM has painted and #chessboard has real dimensions
+  requestAnimationFrame(() => {
+    try {
+      board = Chessboard('chessboard', {
+        position: 'start',
+        draggable: false,
+        orientation: myColor,
+        pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg',
+      });
+    } catch(e) {
+      console.error('Chessboard error:', e);
+    }
+
+    document.getElementById('chessboard').addEventListener('click', function(e) {
+      const squareEl = e.target.closest('[data-square]');
+      if (!squareEl) return;
+      const square = squareEl.getAttribute('data-square');
+      onSquareClick(square, game.get(square));
+    });
+
+    updateChessUI();
+    addLog('Game started! Good luck.', 'highlight');
+  });
+}
+
+// ── HIGHLIGHT HELPERS ──
+const highlightedSquares = new Map();
+
+function highlightSquare(square, type) {
+  const el = document.querySelector(`[data-square="${square}"]`);
+  if (!el) return;
+  const isLight = el.classList.contains('white-1e1d7');
+  if (type === 'selected') {
+    el.style.background = isLight ? '#f6f669' : '#baca2b';
+  } else if (type === 'move') {
+    if (!el.querySelector('.move-dot')) {
+      const dot = document.createElement('div');
+      dot.className = 'move-dot';
+      dot.style.cssText = 'position:absolute;border-radius:50%;width:28%;height:28%;background:rgba(0,0,0,0.2);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:10;';
+      el.style.position = 'relative';
+      el.appendChild(dot);
+    }
+  }
+  highlightedSquares.set(square, el);
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.move-dot').forEach(d => d.remove());
+  highlightedSquares.forEach(el => { el.style.background = ''; });
+  highlightedSquares.clear();
 }
 
 // ── CHESS LOGIC ──
-function onDragStart(source, piece) {
-  if (!gameActive) return false;
-  if (game.game_over()) return false;
-  if (myColor === 'white' && piece.search(/^b/) !== -1) return false;
-  if (myColor === 'black' && piece.search(/^w/) !== -1) return false;
-  if (game.turn() !== myColor[0]) return false;
+function onSquareClick(square, piece) {
+  if (!gameActive) return;
+  if (game.turn() !== myColor[0]) return;
+  if (viewingMove !== -1) { goToMove(-1); return; }
+
+  if (selectedSquare) {
+    const before = new Chess(game.fen());
+    const move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+    clearHighlights(); selectedSquare = null;
+    if (move !== null) {
+      const after = new Chess(game.fen());
+      board.position(game.fen());
+      socket.emit('chess_move', { move, fen: game.fen(), pgn: game.pgn() });
+      updateChessUI(game.pgn());
+      addLog(`You: ${move.san}`);
+      detectAndMarkEvents(move, before, after);
+      if (game.in_checkmate()) setTimeout(() => socket.emit('claim_checkmate'), 100);
+      return;
+    }
+    if (!piece) return;
+  }
+
+  if (!piece) return;
+  if (piece.color !== myColor[0]) return;
+  const moves = game.moves({ square, verbose: true });
+  if (moves.length === 0) return;
+  selectedSquare = square;
+  highlightSquare(square, 'selected');
+  moves.forEach(m => highlightSquare(m.to, 'move'));
 }
 
-function onDrop(source, target) {
-  const move = game.move({ from: source, to: target, promotion: 'q' });
-  if (move === null) return 'snapback';
-
-  socket.emit('chess_move', {
-    move,
-    fen: game.fen(),
-    pgn: game.pgn()
+// ── EVENT DETECTION ──
+function detectAndMarkEvents(move, before, after) {
+  const triggered = [];
+  ALL_EVENTS.forEach(ev => {
+    if (triggeredIds.has(ev.id)) return; // already fired
+    try {
+      if (ev.detect(move, before, after)) {
+        triggeredIds.add(ev.id);
+        triggered.push(ev.id);
+      }
+    } catch(e) {}
   });
 
-  updateChessUI(game.pgn());
-  addLog(`You: ${move.san}`);
+  if (triggered.length === 0) return;
 
-  if (game.in_checkmate()) {
-    setTimeout(() => socket.emit('claim_checkmate'), 100);
-  }
+  // Mark matching cells on MY card
+  let changed = false;
+  triggered.forEach(id => {
+    bingoBoard.forEach((ev, i) => {
+      if (ev.id === id && !marked.has(i)) {
+        marked.add(i);
+        changed = true;
+      }
+    });
+  });
+
+  // Tell opponent about triggered events so they can mark their card too
+  socket.emit('events_detected', { triggered: triggered.map(id => ({ eventId: id })) });
+
+  if (changed) { renderBingo(); checkBingo(); }
 }
 
+// ── CHESS UI ──
 function updateChessUI(pgn) {
-  const turn = game.turn() === 'w' ? 'White' : 'Black';
   const myTurn = game.turn() === myColor[0];
-  document.getElementById('chessTurnLabel').textContent = myTurn ? 'Your turn' : `${turn} to move`;
+  const turnColor = game.turn() === 'w' ? 'White' : 'Black';
+  document.getElementById('chessTurnLabel').textContent = myTurn ? 'Your turn' : `${turnColor} to move`;
 
-  const wBadge = document.getElementById('badge-white');
-  const bBadge = document.getElementById('badge-black');
-  wBadge.classList.toggle('active-turn', game.turn() === 'w');
-  bBadge.classList.toggle('active-turn', game.turn() === 'b');
+  ['white','black'].forEach(c => {
+    const isActive = game.turn() === c[0];
+    document.getElementById(`badge-${c}`).classList.toggle('active-turn', isActive);
+    const s = document.getElementById(`sidebar-${c}`);
+    if (s) s.classList.toggle('active-turn', isActive);
+  });
 
-  if (pgn) {
-    const hist = game.history();
-    let html = '';
-    for (let i = 0; i < hist.length; i += 2) {
-      html += `<span style="color:var(--text2)">${Math.floor(i/2)+1}.</span> ${hist[i]} ${hist[i+1] || ''} `;
-    }
-    const mh = document.getElementById('moveHistory');
-    mh.innerHTML = html || '—';
-    mh.scrollTop = mh.scrollHeight;
+  if (!pgn) return;
+
+  const hist = game.history({ verbose: true });
+  const tmp = new Chess();
+  moveHistory = hist.map(m => { tmp.move(m.san); return { san: m.san, fen: tmp.fen() }; });
+
+  if (viewingMove === -1 || viewingMove >= moveHistory.length) viewingMove = -1;
+  renderMoveList();
+}
+
+function renderMoveList() {
+  const list = document.getElementById('moveList');
+  if (!list) return;
+  const activeIdx = viewingMove === -1 ? moveHistory.length - 1 : viewingMove;
+  if (moveHistory.length === 0) { list.innerHTML = '<span class="mn" style="padding:0 6px">No moves yet</span>'; return; }
+  let html = '';
+  for (let i = 0; i < moveHistory.length; i += 2) {
+    html += `<span class="mn">${Math.floor(i/2)+1}.</span>`;
+    html += `<span class="mv${activeIdx===i?' active':''}" onclick="goToMove(${i})">${moveHistory[i].san}</span>`;
+    if (moveHistory[i+1]) html += `<span class="mv${activeIdx===i+1?' active':''}" onclick="goToMove(${i+1})">${moveHistory[i+1].san}</span>`;
   }
+  list.innerHTML = html;
+  const activeEl = list.querySelector('.mv.active');
+  if (activeEl) activeEl.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+}
+
+function goToMove(idx) {
+  if (moveHistory.length === 0) return;
+  if (idx < 0) idx = -1;
+  else if (idx >= moveHistory.length) idx = -1;
+  viewingMove = idx;
+  const fen = idx === -1 ? moveHistory[moveHistory.length-1].fen : moveHistory[idx].fen;
+  board.position(fen, false);
+  renderMoveList();
 }
 
 // ── BINGO ──
 function shuffle(arr) {
   const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+  for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
   return a;
 }
 
 function buildBingoCard() {
-  bingoBoard = shuffle(ALL_EVENTS).slice(0, 24);
-  bingoBoard.splice(12, 0, { icon: '♚', label: 'FREE\nSPACE', free: true });
+  // Shuffle events and pick 24, insert FREE in the middle
+  const picked = shuffle(ALL_EVENTS).slice(0, 24);
+  picked.splice(12, 0, { id: 'free', icon: '♚', label: 'FREE\nSPACE', desc: '', free: true });
+  bingoBoard = picked;
   marked = new Set([12]);
-  socket.emit('register_board', { board: bingoBoard });
+  triggeredIds = new Set();
+  socket.emit('register_board', { eventIds: bingoBoard.map(e => e.id) });
   renderBingo();
-}
-
-function toggleCell(i) {
-  if (!gameActive) return;
-  if (bingoBoard[i].free) return;
-  if (marked.has(i)) marked.delete(i);
-  else marked.add(i);
-  renderBingo();
-  socket.emit('mark_square', { index: i });
-  checkBingo();
-}
-
-function checkBingo() {
-  const lines = [];
-  for (let r = 0; r < 5; r++) lines.push([0,1,2,3,4].map(c => r*5+c));
-  for (let c = 0; c < 5; c++) lines.push([0,1,2,3,4].map(r => r*5+c));
-  lines.push([0,6,12,18,24]);
-  lines.push([4,8,12,16,20]);
-
-  const winning = lines.filter(l => l.every(i => marked.has(i)));
-  const winCells = new Set(winning.flat());
-
-  document.querySelectorAll('.bingo-cell').forEach((c, i) => {
-    c.classList.toggle('bingo-line', winCells.has(i) && marked.has(i));
-  });
-
-  if (winning.length > 0) {
-    socket.emit('claim_bingo', { lines: winning });
-  }
 }
 
 function renderBingo() {
@@ -777,35 +1075,47 @@ function renderBingo() {
     const isMarked = marked.has(i);
     const isFree = ev.free;
     const lines = ev.label.split('\n');
-    return `<div class="bingo-cell${isFree ? ' free-cell' : ''}${isMarked ? ' marked' : ''}"
-      onclick="toggleCell(${i})" title="${ev.desc || ''}">
+    return `<div class="bingo-cell${isFree?' free-cell':''}${isMarked?' marked':''}"
+      ${isFree?'':` onclick="toggleCell(${i})"`} title="${ev.desc||''}">
       <span class="bingo-check">✕</span>
       <span class="bingo-cell-icon">${ev.icon}</span>
-      <span class="bingo-cell-text">${lines.map(l => `<span style="display:block">${l}</span>`).join('')}</span>
+      <span class="bingo-cell-text">${lines.map(l=>`<span style="display:block">${l}</span>`).join('')}</span>
     </div>`;
   }).join('');
   const count = marked.size - 1;
-  document.getElementById('bingoStatus').textContent = `${count} square${count !== 1 ? 's' : ''} marked`;
+  document.getElementById('bingoStatus').textContent = `${count} square${count!==1?'s':''} marked`;
+}
+
+function toggleCell(i) {
+  // Manual toggle is disabled — all cells are auto-detected
+  // (kept in case of future manual events)
+}
+
+function checkBingo() {
+  const lines = [];
+  for(let r=0;r<5;r++) lines.push([0,1,2,3,4].map(c=>r*5+c));
+  for(let c=0;c<5;c++) lines.push([0,1,2,3,4].map(r=>r*5+c));
+  lines.push([0,6,12,18,24]); lines.push([4,8,12,16,20]);
+  const winning = lines.filter(l=>l.every(i=>marked.has(i)));
+  const winCells = new Set(winning.flat());
+  document.querySelectorAll('.bingo-cell').forEach((c,i)=>{ c.classList.toggle('bingo-line', winCells.has(i)&&marked.has(i)); });
+  if (winning.length > 0) socket.emit('claim_bingo', { lines: winning });
 }
 
 // ── GAME OVER ──
 function endGame(reason, winner, winnerId, lines, loserName) {
   gameActive = false;
   const iWon = winnerId === socket.id;
-  const overlay = document.getElementById('gameOverOverlay');
-  const icons = { bingo: '🎯', checkmate: '♛', resign: '🏳️' };
-  const titles = iWon ? 'You Win!' : `${winner} Wins`;
-
-  let msg = '';
-  if (reason === 'checkmate') msg = iWon ? 'Checkmate! Your opponent\'s king has nowhere to go.' : `${winner} delivered checkmate.`;
-  else if (reason === 'bingo') msg = iWon ? 'BINGO! You completed a line before anyone got checkmate.' : `${winner} completed a bingo line!`;
-  else if (reason === 'resign') msg = iWon ? `${loserName} resigned. Well played.` : 'You resigned.';
-
-  document.getElementById('gameOverIcon').textContent = icons[reason] || '♟';
-  document.getElementById('gameOverTitle').textContent = titles;
-  document.getElementById('gameOverMsg').textContent = msg;
-  overlay.classList.add('show');
-  addLog(msg, iWon ? 'highlight' : 'warn');
+  const icons = { bingo:'🎯', checkmate:'♛', resign:'🏳️' };
+  const msgs = {
+    checkmate: iWon ? 'Checkmate! Your opponent\'s king has nowhere to go.' : `${winner} delivered checkmate.`,
+    bingo:     iWon ? 'BINGO! You completed a line!' : `${winner} completed a bingo line!`,
+    resign:    iWon ? `${loserName} resigned. Well played.` : 'You resigned.',
+  };
+  document.getElementById('gameOverIcon').textContent = icons[reason]||'♟';
+  document.getElementById('gameOverTitle').textContent = iWon ? 'You Win!' : `${winner} Wins`;
+  document.getElementById('gameOverMsg').textContent = msgs[reason]||'';
+  document.getElementById('gameOverOverlay').classList.add('show');
 }
 
 function resign() {
@@ -815,26 +1125,19 @@ function resign() {
 }
 
 // ── LOG ──
-function addLog(msg, cls = '') {
+function addLog(msg, cls='') {
   const el = document.getElementById('logEntries');
   if (!el) return;
   const now = new Date();
   const ts = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
   const div = document.createElement('div');
-  div.className = 'log-entry' + (cls ? ' ' + cls : '');
+  div.className = 'log-entry'+(cls?' '+cls:'');
   div.innerHTML = `<span class="ts">${ts}</span>${msg}`;
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
 }
 
-function showMsg(txt, cls = '') {
-  setMsg(txt, cls);
-}
-
-// Auto-uppercase room code input
-document.getElementById('joinCode').addEventListener('input', function() {
-  this.value = this.value.toUpperCase();
-});
+document.getElementById('joinCode').addEventListener('input', function() { this.value=this.value.toUpperCase(); });
 </script>
 </body>
 </html>
