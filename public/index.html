@@ -5,47 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chess Bingo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0d0b08;
-  --bg2: #141210;
-  --bg3: #1c1916;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.14);
-  --text: #ece8de;
-  --text2: #9a9182;
-  --text3: #5a5347;
-  --gold: #c9a84c;
-  --gold-dim: rgba(201,168,76,0.35);
-  --gold-bg: rgba(201,168,76,0.09);
-  --green: #4a9e6e;
-  --green-bg: rgba(74,158,110,0.13);
-  --green-text: #7ecba0;
-  --red: #c0504a;
-  --red-bg: rgba(192,80,74,0.13);
+  --bg: #f0f4ff;
+  --bg2: #ffffff;
+  --bg3: #e8eeff;
+  --border: rgba(99,102,241,0.12);
+  --border2: rgba(99,102,241,0.25);
+  --text: #1e1b4b;
+  --text2: #6366a0;
+  --text3: #a5b4fc;
+  --accent: #6366f1;
+  --accent-dim: rgba(99,102,241,0.15);
+  --accent-bg: rgba(99,102,241,0.08);
+  --pink: #ec4899;
+  --pink-bg: rgba(236,72,153,0.1);
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.12);
+  --green-text: #059669;
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.1);
+  --yellow: #f59e0b;
+  --yellow-bg: rgba(245,158,11,0.12);
+  /* keep gold vars pointing to accent for compat */
+  --gold: #6366f1;
+  --gold-dim: rgba(99,102,241,0.3);
+  --gold-bg: rgba(99,102,241,0.08);
 }
 html, body { height: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Mono', monospace;
+  font-family: 'Nunito', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
 }
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background-image: repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%);
-  background-size: 40px 40px;
-  pointer-events: none; z-index: 0;
-}
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse 90% 70% at 50% 40%, transparent 30%, var(--bg) 100%);
+  background-image: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(236,72,153,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 60% 10%, rgba(16,185,129,0.04) 0%, transparent 40%);
   pointer-events: none; z-index: 0;
 }
 
@@ -53,117 +56,275 @@ body::after {
 .screen { position: relative; z-index: 1; display: none; }
 .screen.active { display: flex; }
 
-/* ── LOBBY ── */
+/* ── LOBBY / HOME ── */
 #lobbyScreen {
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  padding: 2rem 1.5rem;
+  padding: 0;
   gap: 0;
 }
-.logo { text-align: center; margin-bottom: 2.5rem; }
-.logo h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(38px, 10vw, 64px);
-  font-weight: 900;
-  letter-spacing: -1.5px;
-  line-height: 1;
-}
-.logo h1 em { color: var(--gold); font-style: normal; }
-.logo p { font-size: 11px; letter-spacing: 0.18em; color: var(--text2); margin-top: 8px; text-transform: uppercase; }
 
-.lobby-card {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 2rem;
+/* Hero - three column */
+.home-hero {
   width: 100%;
-  max-width: 400px;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  padding: 4rem 2rem 3rem;
 }
-.lobby-card h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px; font-weight: 700;
-  margin-bottom: 1.2rem;
+@media (max-width: 900px) {
+  .home-hero { grid-template-columns: 1fr 1fr; }
+  .hero-left { grid-column: 1 / -1; }
+}
+@media (max-width: 580px) {
+  .home-hero { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 1.5rem; }
+}
+.hero-tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.hero-left h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(44px, 7vw, 72px);
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+  margin-bottom: 1rem;
   color: var(--text);
 }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 10px; letter-spacing: 0.12em; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; }
+.hero-left h1 em { color: var(--pink); font-style: normal; }
+.hero-left > p {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  max-width: 420px;
+  font-weight: 600;
+}
+.hero-left > p em { color: var(--accent); font-style: normal; font-weight: 800; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1.5px solid var(--accent-dim);
+}
+.hero-right { display: flex; flex-direction: column; gap: 0; }
+.play-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1rem 0;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.play-divider::before, .play-divider::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: var(--border2);
+  border-radius: 2px;
+}
+
+/* Forms */
+.play-card {
+  background: var(--bg2);
+  border: 2px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.07);
+}
+.play-card h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+.form-group { margin-bottom: 0.85rem; }
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
 .form-group input {
   width: 100%;
   background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
+  border: 2px solid var(--border2);
+  border-radius: 10px;
   padding: 9px 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.form-group input:focus { border-color: var(--gold-dim); }
-.form-group input::placeholder { color: var(--text2); }
-
-.divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
-.divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
-.divider span { font-size: 11px; color: var(--text2); }
+.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+.form-group input::placeholder { color: var(--text3); font-weight: 400; }
 
 .btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px; font-weight: 500;
-  letter-spacing: 0.05em;
-  padding: 10px 20px;
-  border-radius: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 20px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.12s;
   width: 100%;
+  margin-top: 0.25rem;
 }
-.btn-gold { background: var(--gold); border: none; color: #0d0b08; }
-.btn-gold:hover { background: #d4b05a; transform: translateY(-1px); }
-.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
-.btn-outline:hover { border-color: var(--text2); color: var(--text); background: rgba(255,255,255,0.04); }
-.btn:active { transform: scale(0.98) !important; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+.btn-accent, .btn-gold {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+.btn-accent:hover, .btn-gold:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(99,102,241,0.35); }
+.btn-outline { background: transparent; border: 2px solid var(--border2); color: var(--text2); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.btn:active { transform: scale(0.98) !important; box-shadow: none !important; }
 
-.lobby-msg { font-size: 12px; color: var(--text2); text-align: center; margin-top: 1rem; min-height: 18px; }
+.lobby-msg { font-size: 12px; font-weight: 700; color: var(--text2); text-align: center; margin-top: 0.75rem; min-height: 18px; }
 .lobby-msg.error { color: var(--red); }
-.lobby-msg.success { color: var(--green-text); }
 
 .waiting-box {
   display: none;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 1.5rem;
-  border: 1px solid var(--border2);
-  border-radius: 10px;
+  padding: 2rem 1.5rem;
+  border: 2px solid var(--border2);
+  border-radius: 16px;
   background: var(--bg2);
   width: 100%;
-  max-width: 400px;
   text-align: center;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.08);
 }
 .waiting-box.show { display: flex; }
 .room-code {
-  font-family: 'Playfair Display', serif;
-  font-size: 36px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  color: var(--gold);
+  font-family: 'Fredoka One', cursive;
+  font-size: 40px;
+  font-weight: 400;
+  letter-spacing: 8px;
+  color: var(--accent);
 }
-.waiting-box p { font-size: 11px; color: var(--text2); letter-spacing: 0.08em; }
+.waiting-box p { font-size: 12px; color: var(--text2); font-weight: 700; }
 .copy-btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  background: transparent;
-  border: 1px solid var(--border2);
-  color: var(--text2);
-  padding: 5px 14px;
-  border-radius: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--accent-bg);
+  border: 2px solid var(--accent-dim);
+  color: var(--accent);
+  padding: 6px 18px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.12s;
 }
-.copy-btn:hover { color: var(--text); border-color: var(--text2); }
+.copy-btn:hover { background: var(--accent); color: #fff; }
+.share-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.share-link-box {
+  width: 100%;
+  background: var(--bg3);
+  border: 2px solid var(--border2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  word-break: break-all;
+  text-align: left;
+  display: none;
+}
+.share-link-box.show { display: block; }
 .pulse { animation: pulse 1.5s infinite ease-in-out; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* Sections */
+.home-section {
+  width: 100%;
+  max-width: 1100px;
+  padding: 3rem 2rem;
+  border-top: 2px solid var(--border);
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 0.5rem;
+}
+.section-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+.step {
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 12px rgba(99,102,241,0.05);
+}
+.step-num { font-size: 11px; font-weight: 800; color: var(--accent); letter-spacing: 0.1em; }
+.step-title { font-size: 14px; font-weight: 800; color: var(--text); }
+.step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; font-weight: 600; }
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 8px;
+}
+.tile-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: border-color 0.12s;
+}
+.tile-item:hover { border-color: var(--accent-dim); }
+.tile-item-free { border-color: var(--accent-dim); background: var(--accent-bg); }
+.tile-item-free .tile-name { color: var(--accent); }
+.tile-icon { font-size: 18px; min-width: 28px; text-align: center; flex-shrink: 0; }
+.tile-name { font-size: 12px; font-weight: 800; color: var(--text); }
+.tile-desc { font-size: 11px; color: var(--text2); line-height: 1.4; margin-top: 2px; font-weight: 600; }
 
 /* ── GAME SCREEN ── */
 #gameScreen {
@@ -179,12 +340,13 @@ body::after {
   padding: 12px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--bg2);
+  border-bottom: 2px solid var(--border);
   position: relative; z-index: 2;
   flex-wrap: wrap;
   gap: 8px;
 }
 .game-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Fredoka One', cursive;
   font-size: 20px; font-weight: 900;
   letter-spacing: -0.5px;
 }
@@ -204,7 +366,7 @@ body::after {
 .dot-black { background: #4a4540; border: 1px solid #6a6560; }
 .header-btns { display: flex; gap: 6px; }
 .sm-btn {
-  font-family: 'DM Mono', monospace;
+  font-family: 'Nunito', sans-serif;
   font-size: 10px;
   padding: 5px 10px;
   border-radius: 5px;
@@ -300,7 +462,7 @@ body::after {
 }
 .nav-btn {
   flex: 1;
-  font-family: 'DM Mono', monospace;
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   padding: 5px 0;
   background: var(--bg2);
@@ -366,7 +528,7 @@ body::after {
 }
 
 .bingo-panel h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Fredoka One', cursive;
   font-size: 15px; font-weight: 700;
   margin-bottom: 4px;
 }
@@ -374,8 +536,8 @@ body::after {
 
 .bingo-card {
   background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
+  border: 2px solid var(--border2);
+  border-radius: 16px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -414,8 +576,8 @@ body::after {
 
 
 .bingo-cell.marked {
-  background: rgba(201,168,76,0.22);
-  border-color: var(--gold);
+  background: rgba(236,72,153,0.12);
+  border-color: var(--pink);
 }
 .bingo-cell.bingo-line {
   background: rgba(74,158,110,0.25) !important;
@@ -447,7 +609,7 @@ body::after {
   align-items: center;
   justify-content: center;
   font-size: 40px;
-  color: var(--gold);
+  color: var(--pink);
   opacity: 0;
   z-index: 2;
   pointer-events: none;
@@ -485,7 +647,7 @@ body::after {
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .gameover-icon { font-size: 48px; margin-bottom: 12px; }
 .gameover-card h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Fredoka One', cursive;
   font-size: 26px; font-weight: 900;
   color: var(--gold);
   margin-bottom: 6px;
@@ -522,42 +684,94 @@ body::after {
 </head>
 <body>
 
-<!-- ═══════════════ LOBBY ═══════════════ -->
+<!-- ═══════════════ HOME ═══════════════ -->
 <div id="lobbyScreen" class="screen active">
-  <div class="logo fade-in">
-    <h1>Chess <em>Bingo</em></h1>
-    <p>Win by checkmate — or complete a bingo line first</p>
-  </div>
 
-  <div class="lobby-card fade-in" id="lobbyCard" style="animation-delay:0.1s">
-    <h2>Create a game</h2>
-    <div class="form-group">
-      <label>Your name</label>
-      <input type="text" id="createName" placeholder="e.g. Magnus" maxlength="20">
+  <!-- Hero + Forms -->
+  <div class="home-hero fade-in">
+    <div class="hero-left">
+      <div class="hero-tag">♟ Two-player chess variant</div>
+      <h1>Chess <em>Bingo</em></h1>
+      <p>Play chess. Complete a bingo card. Win by checkmate <em>or</em> bingo — whichever comes first.</p>
+      <div class="hero-badges">
+        <span class="badge-pill">🎯 Auto-detected events</span>
+        <span class="badge-pill">⚡ Real-time multiplayer</span>
+        <span class="badge-pill">♔ Two ways to win</span>
+      </div>
     </div>
-    <button class="btn btn-gold" onclick="createGame()">Create room</button>
+    <div class="play-card" id="lobbyCard">
+        <h2>Create a game</h2>
+        <div class="form-group">
+          <label>Your name</label>
+          <input type="text" id="createName" placeholder="e.g. Magnus" maxlength="20">
+        </div>
+        <button class="btn btn-accent" onclick="createGame()">Create room →</button>
+        <p class="lobby-msg" id="lobbyMsg"></p>
+      </div>
 
-    <div class="divider"><hr><span>or</span><hr></div>
-
-    <h2>Join a game</h2>
-    <div class="form-group">
-      <label>Your name</label>
-      <input type="text" id="joinName" placeholder="e.g. Hikaru" maxlength="20">
-    </div>
-    <div class="form-group">
-      <label>Room code</label>
-      <input type="text" id="joinCode" placeholder="e.g. A3F9C2" maxlength="6" style="text-transform:uppercase; letter-spacing:0.15em">
-    </div>
-    <button class="btn btn-outline" onclick="joinGame()">Join room</button>
-    <p class="lobby-msg" id="lobbyMsg"></p>
-  </div>
+      <div class="play-card">
+        <h2>Join a game</h2>
+        <div class="form-group">
+          <label>Your name</label>
+          <input type="text" id="joinName" placeholder="e.g. Hikaru" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>Room code</label>
+          <input type="text" id="joinCode" placeholder="e.g. A3F9C2" maxlength="6" style="text-transform:uppercase;letter-spacing:0.15em">
+        </div>
+        <button class="btn btn-outline" onclick="joinGame()">Join room →</button>
+      </div>
 
   <div class="waiting-box" id="waitingBox">
-    <p class="pulse" style="font-size:11px;color:var(--text2);letter-spacing:0.1em">WAITING FOR OPPONENT</p>
+    <p class="pulse" style="font-size:11px;color:var(--text2);letter-spacing:0.1em;font-weight:800">WAITING FOR OPPONENT</p>
     <div class="room-code" id="displayCode"></div>
-    <p>Share this code with your opponent</p>
-    <button class="copy-btn" onclick="copyCode()">Copy code</button>
+    <p style="font-size:12px;color:var(--text2);font-weight:700">Share this code with your opponent</p>
+    <div class="share-row">
+      <button class="copy-btn" onclick="copyCode()">Copy code</button>
+      <button class="copy-btn" onclick="copyLink()">Copy link</button>
+      <a id="emailLink" class="copy-btn" href="#" target="_blank">Email invite</a>
+    </div>
+    <div class="share-link-box" id="shareLinkBox"></div>
   </div>
+
+  </div>
+
+  <!-- How to play -->
+  <div class="home-section fade-in" id="how-to-play">
+    <div class="section-label">How to play</div>
+    <div class="section-title">Two ways to win</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Create or join a game</div>
+        <div class="step-desc">One player creates a room and shares the 6-character code. The other player enters it to join. Each player gets their own randomly generated bingo card.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Play chess normally</div>
+        <div class="step-desc">Make your moves on the chess board. Both players see the same game. Play to win by checkmate — but keep one eye on your bingo card.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Bingo squares auto-fill</div>
+        <div class="step-desc">As events happen on the board — a pawn promotes, a knight forks two pieces, en passant is played — matching squares on both players' bingo cards fill in automatically.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">First to win, wins</div>
+        <div class="step-desc">Complete a row, column, or diagonal on your bingo card before your opponent does — or deliver checkmate. Either path wins the game.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bingo tile guide -->
+  <div class="home-section fade-in" id="tile-guide">
+    <div class="section-label">Bingo card</div>
+    <div class="section-title">What's on the board</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1.5rem;line-height:1.7;font-weight:600">Each player gets a randomly shuffled 5×5 bingo card drawn from the 24 events below, plus a free space in the centre. All squares fill automatically — no cheating possible. Each event only triggers once per game.</p>
+    <div class="tile-grid" id="tileGuide"></div>
+  </div>
+
 </div>
 
 <!-- ═══════════════ GAME ═══════════════ -->
@@ -766,6 +980,12 @@ const ALL_EVENTS = [
   { id:'threefold',      icon:'↺',    label:'Threefold\nrepetition',     desc:'The same position occurs three times',
     detect:(_,__,a)=>a.in_threefold_repetition()
   },
+  { id:'king_takes',     icon:'♔✕',   label:'King\ncaptures',            desc:'The king captures a piece',
+    detect:(m)=>m.piece==='k' && !!m.captured
+  },
+  { id:'queening_square',icon:'♛!',   label:'Pawn on\n6th rank',         desc:'A pawn reaches the 6th rank (one step from promotion)',
+    detect:(m)=>m.piece==='p' && m.to[1]===(m.color==='w'?'6':'3')
+  },
 ];
 
 // ── STATE ──
@@ -847,6 +1067,14 @@ async function createGame() {
     wb.classList.add('show');
     document.getElementById('displayCode').textContent = rid;
     document.getElementById('headerCode').textContent = rid;
+
+    // Build shareable link
+    const shareUrl = `${window.location.origin}?join=${rid}`;
+    document.getElementById('shareLinkBox').textContent = shareUrl;
+    document.getElementById('shareLinkBox').classList.add('show');
+    const subject = encodeURIComponent('Join my Chess Bingo game!');
+    const body = encodeURIComponent(`I've created a Chess Bingo game — join me!\n\nClick this link to join: ${shareUrl}\n\nOr go to ${window.location.origin} and enter code: ${rid}`);
+    document.getElementById('emailLink').href = `mailto:?subject=${subject}&body=${body}`;
   });
 }
 
@@ -863,6 +1091,24 @@ function joinGame() {
     startGame();
   });
 }
+
+function copyLink() {
+  const shareUrl = `${window.location.origin}?join=${roomId}`;
+  navigator.clipboard.writeText(shareUrl).catch(() => {});
+  const btns = document.querySelectorAll('.share-row .copy-btn');
+  btns.forEach(b => { if (b.textContent === 'Copy link') { b.textContent = 'Copied!'; setTimeout(() => b.textContent = 'Copy link', 1500); } });
+}
+
+// Auto-fill join code if arriving via share link (?join=XXXXXX)
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const joinCode = params.get('join');
+  if (joinCode) {
+    document.getElementById('joinCode').value = joinCode.toUpperCase();
+    document.getElementById('joinName').focus();
+    document.getElementById('joinCode').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+})();
 
 function copyCode() {
   navigator.clipboard.writeText(roomId).catch(()=>{});
@@ -1138,6 +1384,31 @@ function addLog(msg, cls='') {
 }
 
 document.getElementById('joinCode').addEventListener('input', function() { this.value=this.value.toUpperCase(); });
+
+// Populate tile guide on home page
+(function() {
+  const el = document.getElementById('tileGuide');
+  if (!el) return;
+  const freeSpace = `
+    <div class="tile-item tile-item-free">
+      <span class="tile-icon">♚</span>
+      <div class="tile-info">
+        <div class="tile-name">Free Space</div>
+        <div class="tile-desc">The centre square is always pre-marked at the start of every game.</div>
+      </div>
+    </div>`;
+  const tiles = ALL_EVENTS.map(ev => `
+    <div class="tile-item">
+      <span class="tile-icon">${ev.icon}</span>
+      <div class="tile-info">
+        <div class="tile-name">${ev.label.replace('\n',' ')}</div>
+        <div class="tile-desc">${ev.desc}</div>
+      </div>
+    </div>`);
+  // Insert free space at position 12 (middle of 5x5)
+  tiles.splice(12, 0, freeSpace);
+  el.innerHTML = tiles.join('');
+})();
 </script>
 </body>
 </html>
