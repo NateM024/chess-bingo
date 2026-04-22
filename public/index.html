@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chess Bingo</title>
+<link rel="icon" type="image/png" href="/cb_favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
@@ -513,6 +514,14 @@ body::before {
   opacity: 0.7;
 }
 .resign-btn:hover { opacity: 1; background: var(--red-bg) !important; }
+.resign-btn.resign-confirm {
+  opacity: 1;
+  background: var(--red) !important;
+  color: #fff !important;
+  border-color: var(--red) !important;
+  animation: resignPulse 0.5s ease;
+}
+@keyframes resignPulse { 0%{transform:scale(1)} 40%{transform:scale(1.06)} 100%{transform:scale(1)} }
 
 /* ── BINGO PANEL ── */
 .bingo-panel {
@@ -947,7 +956,7 @@ body::before {
         <div class="clock" id="clock-white">—</div>
         <div class="clock-label" id="clock-white-label">White</div>
         <div style="flex:1"></div>
-        <button class="btn btn-outline resign-btn" onclick="resign()">Resign</button>
+        <button class="btn btn-outline resign-btn" id="resignBtn" onclick="resignClick()">Resign</button>
       </div>
     </div>
   </div>
@@ -1596,6 +1605,7 @@ function checkBingo() {
 function endGame(reason, winner, winnerId, lines, loserName) {
   gameActive = false;
   stopClock();
+  cancelResign();
   const iWon = winnerId === socket.id;
   const icons = { bingo:'🎯', checkmate:'♛', resign:'🏳️', flag:'⏱️' };
   const msgs = {
@@ -1709,11 +1719,38 @@ function addRematchListeners() {
   });
 }
 
-function resign() {
+let resignPending = false;
+let resignTimeout = null;
+
+function resignClick() {
   if (!gameActive) return;
-  if (!confirm('Are you sure you want to resign?')) return;
-  stopClock();
-  socket.emit('resign');
+  if (!resignPending) {
+    // First click — show confirmation state
+    resignPending = true;
+    const btn = document.getElementById('resignBtn');
+    btn.textContent = 'Confirm?';
+    btn.classList.add('resign-confirm');
+    // Auto-cancel after 3 seconds
+    resignTimeout = setTimeout(cancelResign, 3000);
+  } else {
+    // Second click — confirm
+    clearTimeout(resignTimeout);
+    resignPending = false;
+    stopClock();
+    socket.emit('resign');
+  }
+}
+
+function cancelResign() {
+  resignPending = false;
+  clearTimeout(resignTimeout);
+  const btn = document.getElementById('resignBtn');
+  if (btn) { btn.textContent = 'Resign'; btn.classList.remove('resign-confirm'); }
+}
+
+function resign() {
+  // kept for compatibility — just triggers the click flow
+  resignClick();
 }
 
 // ── LOG ──
