@@ -37,10 +37,11 @@ io.on('connection', (socket) => {
   console.log('connected:', socket.id);
 
   // ── Create a new room ──
-  socket.on('create_room', ({ name }, cb) => {
+  socket.on('create_room', ({ name, timeControl }, cb) => {
     const roomId = makeRoomId();
     const state = createRoomState();
     state.players.push({ id: socket.id, name, color: 'white' });
+    state.timeControl = timeControl || { time: 300, inc: 0 };
     rooms.set(roomId, state);
     socket.join(roomId);
     socket.data.roomId = roomId;
@@ -61,10 +62,10 @@ io.on('connection', (socket) => {
     socket.data.roomId = roomId;
     socket.data.color = 'black';
 
-    cb({ color: 'black', opponentName: room.players[0].name });
+    cb({ color: 'black', opponentName: room.players[0].name, timeControl: room.timeControl });
 
     // Tell white that black joined
-    io.to(room.players[0].id).emit('opponent_joined', { name });
+    io.to(room.players[0].id).emit('opponent_joined', { name, timeControl: room.timeControl });
 
     console.log(`${name} joined room ${roomId}`);
   });
@@ -133,6 +134,57 @@ io.on('connection', (socket) => {
       winnerId: socket.id
     });
     console.log(`Checkmate in room ${roomId} by ${winner?.name}`);
+  });
+
+  // ── Flag (timeout) ──
+  socket.on('flag', ({ color }) => {
+    const roomId = socket.data.roomId;
+    const room = rooms.get(roomId);
+    if (!room || room.gameOver) return;
+
+    const loser = room.players.find(p => p.color === color);
+    const winner = room.players.find(p => p.color !== color);
+    room.gameOver = { reason: 'flag', winner: winner?.name };
+
+    io.to(roomId).emit('flag', {
+      color,
+      winner: winner?.name,
+      winnerId: winner?.id,
+      loserName: loser?.name,
+    });
+  });
+
+  // ── Rematch request ──
+  socket.on('rematch_request', () => {
+    const roomId = socket.data.roomId;
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    if (!room.rematchVotes) room.rematchVotes = new Set();
+    room.rematchVotes.add(socket.id);
+
+    // Notify opponent that this player wants a rematch
+    socket.to(roomId).emit('rematch_requested', { name: room.players.find(p => p.id === socket.id)?.name });
+
+    // Both players voted — start rematch
+    if (room.rematchVotes.size >= 2) {
+      room.gameOver = null;
+      room.rematchVotes = new Set();
+      room.chess = { fen: 'start', history: [] };
+      // Swap colors
+      room.players.forEach(p => { p.color = p.color === 'white' ? 'black' : 'white'; });
+      io.to(roomId).emit('rematch_start', {
+        players: room.players.map(p => ({ id: p.id, name: p.name, color: p.color }))
+      });
+    }
+  });
+
+  socket.on('rematch_declined', () => {
+    const roomId = socket.data.roomId;
+    const room = rooms.get(roomId);
+    if (!room) return;
+    room.rematchVotes = new Set();
+    socket.to(roomId).emit('rematch_declined');
   });
 
   // ── Resign ──

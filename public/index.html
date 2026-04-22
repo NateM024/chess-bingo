@@ -544,20 +544,20 @@ body::before {
 
 .bingo-grid {
   display: inline-grid;
-  grid-template-columns: repeat(5, 112px);
-  grid-template-rows: repeat(5, 112px);
+  grid-template-columns: repeat(5, 94px);
+  grid-template-rows: repeat(5, 94px);
   gap: 5px;
   flex-shrink: 0;
   padding: 5px;
 }
 
 .bingo-cell {
-  width: 112px !important;
-  height: 112px !important;
-  max-width: 112px !important;
-  max-height: 112px !important;
-  min-width: 112px !important;
-  min-height: 112px !important;
+  width: 94px !important;
+  height: 94px !important;
+  max-width: 94px !important;
+  max-height: 94px !important;
+  min-width: 94px !important;
+  min-height: 94px !important;
   box-sizing: border-box !important;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -576,8 +576,8 @@ body::before {
 
 
 .bingo-cell.marked {
-  background: rgba(236,72,153,0.12);
-  border-color: var(--pink);
+  background: rgba(245,158,11,0.15);
+  border-color: #f59e0b;
 }
 .bingo-cell.bingo-line {
   background: rgba(74,158,110,0.25) !important;
@@ -589,19 +589,19 @@ body::before {
   border-color: var(--gold-dim);
 }
 .bingo-cell-icon {
-  font-size: 28px;
+  font-size: 22px;
   line-height: 1;
   margin-bottom: 6px;
   position: relative; z-index: 1;
 }
 .bingo-cell-text {
-  font-size: 11px;
+  font-size: 9px;
   line-height: 1.3;
   color: var(--text2);
   position: relative; z-index: 1;
 }
-.bingo-cell.marked .bingo-cell-text { color: var(--text); }
-.bingo-cell.free-cell .bingo-cell-text { color: var(--gold); font-weight: 500; font-size: 12px; }
+.bingo-cell.marked .bingo-cell-text { color: #92400e; font-weight: 700; }
+.bingo-cell.free-cell .bingo-cell-text { color: var(--accent); font-weight: 700; font-size: 9px; }
 .bingo-check {
   position: absolute;
   inset: 0;
@@ -615,7 +615,7 @@ body::before {
   pointer-events: none;
   transition: opacity 0.15s;
 }
-.bingo-cell.marked .bingo-check { opacity: 0.25; }
+.bingo-cell.marked .bingo-check { opacity: 0; }
 .bingo-cell.free-cell .bingo-check { opacity: 0 !important; }
 
 .bingo-status { font-size: 11px; color: var(--text2); margin-top: 0.75rem; }
@@ -627,7 +627,8 @@ body::before {
   display: none;
   position: fixed; inset: 0;
   z-index: 100;
-  background: rgba(13,11,8,0.88);
+  background: rgba(30,27,75,0.75);
+  backdrop-filter: blur(4px);
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -636,25 +637,113 @@ body::before {
 #gameOverOverlay.show { display: flex; }
 .gameover-card {
   background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 2.5rem 2rem;
+  border: 2px solid var(--border2);
+  border-radius: 20px;
+  padding: 2.5rem 2rem 2rem;
   text-align: center;
-  max-width: 360px;
+  max-width: 380px;
   width: 90%;
-  animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  position: relative;
 }
+.gameover-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text2);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.12s, color 0.12s;
+}
+.gameover-close:hover { background: var(--bg3); color: var(--text); }
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.gameover-icon { font-size: 48px; margin-bottom: 12px; }
+.gameover-icon { font-size: 52px; margin-bottom: 10px; }
 .gameover-card h2 {
   font-family: 'Fredoka One', cursive;
-  font-size: 26px; font-weight: 900;
-  color: var(--gold);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--accent);
   margin-bottom: 6px;
 }
-.gameover-card p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.6; }
-.gameover-btns { display: flex; gap: 8px; justify-content: center; }
-.gameover-btns .btn { width: auto; padding: 9px 22px; }
+.gameover-card p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.6; font-weight: 600; }
+.gameover-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.gameover-btns .btn { width: auto; padding: 9px 22px; font-size: 13px; }
+.btn-blue { background: #3b82f6; border: none; color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+.btn-blue:hover { background: #2563eb; transform: translateY(-1px); }
+.rematch-status { font-size: 12px; color: var(--text2); margin-top: 0.75rem; min-height: 18px; font-weight: 700; }
+
+/* Time control */
+.time-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.time-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.12s;
+  width: auto;
+  margin: 0;
+}
+.time-btn:hover { border-color: var(--accent); color: var(--accent); }
+.time-btn.selected { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+
+/* Clocks */
+.clock {
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  width: 100%;
+}
+.clock.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+.clock.low {
+  background: #fef2f2;
+  color: var(--red);
+  border-color: var(--red);
+  animation: clockPulse 1s infinite;
+}
+@keyframes clockPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.clock-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text2);
+  text-align: center;
+  margin-bottom: 3px;
+}
+.btn-lichess {
+  background: #b58863;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-lichess:hover { background: #a07550; transform: translateY(-1px); }
 
 /* ── CHAT / LOG ── */
 .event-log {
@@ -679,6 +768,16 @@ body::before {
   .bingo-panel { padding: 1rem; width: 100%; flex: none; }
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bingoTrigger {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(99,102,241,0.6); }
+  30%  { transform: scale(1.18); box-shadow: 0 0 0 10px rgba(99,102,241,0.2); }
+  60%  { transform: scale(0.95); box-shadow: 0 0 0 18px rgba(99,102,241,0); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+.bingo-cell.just-triggered {
+  animation: bingoTrigger 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both;
+  z-index: 5;
+}
 .fade-in { animation: fadeIn 0.4s ease both; }
 </style>
 </head>
@@ -704,6 +803,18 @@ body::before {
         <div class="form-group">
           <label>Your name</label>
           <input type="text" id="createName" placeholder="e.g. Magnus" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>Time control</label>
+          <div class="time-presets">
+            <button class="time-btn" data-time="60" data-inc="0">1 min</button>
+            <button class="time-btn" data-time="180" data-inc="2">3+2</button>
+            <button class="time-btn selected" data-time="300" data-inc="0">5 min</button>
+            <button class="time-btn" data-time="300" data-inc="3">5+3</button>
+            <button class="time-btn" data-time="600" data-inc="0">10 min</button>
+            <button class="time-btn" data-time="600" data-inc="5">10+5</button>
+            <button class="time-btn" data-time="0" data-inc="0">∞ No limit</button>
+          </div>
         </div>
         <button class="btn btn-accent" onclick="createGame()">Create room →</button>
         <p class="lobby-msg" id="lobbyMsg"></p>
@@ -815,12 +926,14 @@ body::before {
         </div>
         <div class="move-nav">
           <button class="nav-btn" onclick="goToMove(0)" title="Start">⏮</button>
-          <button class="nav-btn" onclick="goToMove(viewingMove - 1)" title="Previous">◀</button>
-          <button class="nav-btn" onclick="goToMove(viewingMove + 1)" title="Next">▶</button>
+          <button class="nav-btn" onclick="goToMove((viewingMove === -1 ? moveHistory.length - 1 : viewingMove) - 1)" title="Previous">◀</button>
+          <button class="nav-btn" onclick="goToMove((viewingMove === -1 ? moveHistory.length - 1 : viewingMove) + 1)" title="Next">▶</button>
           <button class="nav-btn" onclick="goToMove(-1)" title="Latest">⏭</button>
         </div>
       </div>
       <div class="chess-sidebar">
+        <div class="clock-label" id="clock-black-label">Black</div>
+        <div class="clock" id="clock-black">—</div>
         <div class="sidebar-players">
           <div class="sidebar-player" id="sidebar-black">
             <span class="dot dot-black"></span>
@@ -831,6 +944,8 @@ body::before {
             <span id="sidebar-white-name">White</span>
           </div>
         </div>
+        <div class="clock" id="clock-white">—</div>
+        <div class="clock-label" id="clock-white-label">White</div>
         <div style="flex:1"></div>
         <button class="btn btn-outline resign-btn" onclick="resign()">Resign</button>
       </div>
@@ -841,12 +956,20 @@ body::before {
 <!-- ═══════════════ GAME OVER ═══════════════ -->
 <div id="gameOverOverlay">
   <div class="gameover-card">
+    <button class="gameover-close" onclick="document.getElementById('gameOverOverlay').classList.remove('show')" title="Close">✕</button>
     <div class="gameover-icon" id="gameOverIcon">♛</div>
     <h2 id="gameOverTitle">Game Over</h2>
     <p id="gameOverMsg"></p>
     <div class="gameover-btns">
-      <button class="btn btn-outline" onclick="location.reload()">New game</button>
+      <button class="btn btn-blue" onclick="location.reload()">New game</button>
+      <button class="btn btn-accent" id="rematchBtn" onclick="requestRematch()">⟳ Rematch</button>
+      <a id="lichessBtn" class="btn btn-lichess" href="#" target="_blank" rel="noopener">♞ Analyse on Lichess</a>
     </div>
+    <div id="rematchActionBtns" style="display:none;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+      <button class="btn btn-accent" onclick="acceptRematch()">✓ Accept</button>
+      <button class="btn btn-outline" onclick="declineRematch()">✕ Decline</button>
+    </div>
+    <p class="rematch-status" id="rematchStatus"></p>
   </div>
 </div>
 
@@ -1004,12 +1127,72 @@ let selectedSquare = null;
 let viewingMove = -1;
 let moveHistory = [];
 
+// ── TIME CONTROL STATE ──
+let timeControl = { time: 300, inc: 0 };
+let clocks = { w: 300, b: 300 };
+let clockInterval = null;
+
+// ── TIME PRESET SELECTION ──
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    timeControl = { time: parseInt(btn.dataset.time), inc: parseInt(btn.dataset.inc) };
+  });
+});
+
+// ── CLOCK HELPERS ──
+function formatTime(secs) {
+  if (secs <= 0) return '0:00';
+  const m = Math.floor(secs / 60);
+  const s = Math.floor(secs % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function updateClockDisplay() {
+  const turn = game ? game.turn() : 'w';
+  ['w', 'b'].forEach(color => {
+    const id = `clock-${color === 'w' ? 'white' : 'black'}`;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const secs = clocks[color];
+    el.textContent = timeControl.time === 0 ? '∞' : formatTime(secs);
+    el.classList.toggle('active', gameActive && turn === color);
+    el.classList.toggle('low', timeControl.time > 0 && secs <= 10 && secs > 0);
+  });
+}
+
+function startClock(turn) {
+  stopClock();
+  if (timeControl.time === 0) return; // no limit
+  clockInterval = setInterval(() => {
+    if (!gameActive) return stopClock();
+    clocks[turn] = Math.max(0, clocks[turn] - 0.1);
+    updateClockDisplay();
+    if (clocks[turn] <= 0) {
+      stopClock();
+      socket.emit('flag', { color: turn });
+    }
+  }, 100);
+}
+
+function stopClock() {
+  if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+}
+
+function addIncrement(color) {
+  if (timeControl.inc > 0 && timeControl.time > 0) {
+    clocks[color] += timeControl.inc;
+  }
+}
+
 // ── SOCKET SETUP ──
 function initSocket() {
   socket = io();
 
-  socket.on('opponent_joined', ({ name }) => {
+  socket.on('opponent_joined', ({ name, timeControl: tc }) => {
     opponentName = name;
+    if (tc) timeControl = tc;
     addLog(`${name} joined the game`, 'highlight');
     startGame();
   });
@@ -1022,6 +1205,8 @@ function initSocket() {
     board.position(game.fen(), false);
     updateChessUI(game.pgn());
     addLog(`${opponentName}: ${move.san || move.from+move.to}`);
+    addIncrement(move.color);
+    startClock(game.turn());
     detectAndMarkEvents(fullMove || move, before, after);
   });
 
@@ -1038,7 +1223,25 @@ function initSocket() {
         }
       });
     });
-    if (changed) { renderBingo(); checkBingo(); }
+    if (changed) {
+      renderBingo();
+      eventIds.forEach(id => {
+        bingoBoard.forEach((ev, i) => {
+          if (ev.id === id) {
+            setTimeout(() => {
+              const el = document.querySelectorAll('.bingo-cell')[i];
+              if (el) {
+                el.classList.remove('just-triggered');
+                void el.offsetWidth;
+                el.classList.add('just-triggered');
+                setTimeout(() => el.classList.remove('just-triggered'), 600);
+              }
+            }, 50);
+          }
+        });
+      });
+      checkBingo();
+    }
   });
 
   socket.on('game_over', ({ reason, winner, winnerId, lines, loserName }) => {
@@ -1048,6 +1251,18 @@ function initSocket() {
   socket.on('opponent_disconnected', () => {
     addLog('Opponent disconnected', 'warn');
   });
+
+  socket.on('clock_sync', ({ clocks: serverClocks }) => {
+    clocks = serverClocks;
+    updateClockDisplay();
+  });
+
+  socket.on('flag', ({ color, winner, winnerId, loserName }) => {
+    stopClock();
+    endGame('flag', winner, winnerId, null, loserName);
+  });
+
+  addRematchListeners();
 }
 
 // ── LOBBY ──
@@ -1060,7 +1275,7 @@ async function createGame() {
   const name = document.getElementById('createName').value.trim();
   if (!name) return setMsg('Enter your name','error');
   myName = name; initSocket();
-  socket.emit('create_room', { name }, ({ roomId: rid, color }) => {
+  socket.emit('create_room', { name, timeControl }, ({ roomId: rid, color }) => {
     roomId = rid; myColor = color;
     document.getElementById('lobbyCard').style.display = 'none';
     const wb = document.getElementById('waitingBox');
@@ -1087,6 +1302,7 @@ function joinGame() {
   socket.emit('join_room', { roomId: code, name }, (res) => {
     if (res.error) return setMsg(res.error,'error');
     roomId = code; myColor = res.color; opponentName = res.opponentName;
+    if (res.timeControl) timeControl = res.timeControl;
     document.getElementById('headerCode').textContent = code;
     startGame();
   });
@@ -1130,6 +1346,9 @@ function startGame() {
   document.getElementById('sidebar-black-name').textContent = blackName+(myColor==='black'?' (you)':'');
 
   game = new Chess();
+  // Initialise clocks
+  clocks = { w: timeControl.time, b: timeControl.time };
+  updateClockDisplay();
   buildBingoCard();
 
   // Defer board init so the DOM has painted and #chessboard has real dimensions
@@ -1200,6 +1419,8 @@ function onSquareClick(square, piece) {
       socket.emit('chess_move', { move, fen: game.fen(), pgn: game.pgn() });
       updateChessUI(game.pgn());
       addLog(`You: ${move.san}`);
+      addIncrement(move.color);
+      startClock(game.turn());
       detectAndMarkEvents(move, before, after);
       if (game.in_checkmate()) setTimeout(() => socket.emit('claim_checkmate'), 100);
       return;
@@ -1209,6 +1430,11 @@ function onSquareClick(square, piece) {
 
   if (!piece) return;
   if (piece.color !== myColor[0]) return;
+  if (selectedSquare === square) {
+    clearHighlights();
+    selectedSquare = null;
+    return;
+  }
   const moves = game.moves({ square, verbose: true });
   if (moves.length === 0) return;
   selectedSquare = square;
@@ -1245,7 +1471,25 @@ function detectAndMarkEvents(move, before, after) {
   // Tell opponent about triggered events so they can mark their card too
   socket.emit('events_detected', { triggered: triggered.map(id => ({ eventId: id })) });
 
-  if (changed) { renderBingo(); checkBingo(); }
+  if (changed) {
+    renderBingo();
+    triggered.forEach(id => {
+      bingoBoard.forEach((ev, i) => {
+        if (ev.id === id) {
+          setTimeout(() => {
+            const el = document.querySelectorAll('.bingo-cell')[i];
+            if (el) {
+              el.classList.remove('just-triggered');
+              void el.offsetWidth;
+              el.classList.add('just-triggered');
+              setTimeout(() => el.classList.remove('just-triggered'), 600);
+            }
+          }, 50);
+        }
+      });
+    });
+    checkBingo();
+  }
 }
 
 // ── CHESS UI ──
@@ -1351,22 +1595,124 @@ function checkBingo() {
 // ── GAME OVER ──
 function endGame(reason, winner, winnerId, lines, loserName) {
   gameActive = false;
+  stopClock();
   const iWon = winnerId === socket.id;
-  const icons = { bingo:'🎯', checkmate:'♛', resign:'🏳️' };
+  const icons = { bingo:'🎯', checkmate:'♛', resign:'🏳️', flag:'⏱️' };
   const msgs = {
     checkmate: iWon ? 'Checkmate! Your opponent\'s king has nowhere to go.' : `${winner} delivered checkmate.`,
     bingo:     iWon ? 'BINGO! You completed a line!' : `${winner} completed a bingo line!`,
     resign:    iWon ? `${loserName} resigned. Well played.` : 'You resigned.',
+    flag:      iWon ? `${loserName} ran out of time!` : 'You ran out of time.',
   };
   document.getElementById('gameOverIcon').textContent = icons[reason]||'♟';
   document.getElementById('gameOverTitle').textContent = iWon ? 'You Win!' : `${winner} Wins`;
   document.getElementById('gameOverMsg').textContent = msgs[reason]||'';
+  document.getElementById('rematchStatus').textContent = '';
+  document.getElementById('rematchBtn').disabled = false;
+  document.getElementById('rematchBtn').textContent = '⟳ Rematch';
+  document.getElementById('rematchBtn').style.display = '';
+  const actionBtns = document.getElementById('rematchActionBtns');
+  if (actionBtns) actionBtns.style.display = 'none';
+
+  // Build PGN with player names
+  const whiteName = myColor === 'white' ? myName : opponentName;
+  const blackName = myColor === 'black' ? myName : opponentName;
+  const rawPgn = game ? game.pgn() : '';
+  const taggedPgn = `[White "${whiteName}"]\n[Black "${blackName}"]\n\n${rawPgn}`;
+  const lichessUrl = rawPgn
+    ? `https://lichess.org/paste?pgn=${encodeURIComponent(taggedPgn)}`
+    : 'https://lichess.org/analysis';
+  document.getElementById('lichessBtn').href = lichessUrl;
+
   document.getElementById('gameOverOverlay').classList.add('show');
+}
+
+function requestRematch() {
+  document.getElementById('rematchBtn').disabled = true;
+  document.getElementById('rematchBtn').textContent = 'Waiting…';
+  document.getElementById('rematchStatus').textContent = 'Rematch request sent — waiting for opponent';
+  socket.emit('rematch_request');
+}
+
+function acceptRematch() {
+  document.getElementById('rematchActionBtns').style.display = 'none';
+  document.getElementById('rematchStatus').textContent = 'Accepted — starting rematch…';
+  socket.emit('rematch_request');
+}
+
+function declineRematch() {
+  document.getElementById('rematchActionBtns').style.display = 'none';
+  document.getElementById('rematchStatus').textContent = 'Rematch declined.';
+  socket.emit('rematch_declined');
+}
+
+// Add rematch socket listeners inside initSocket
+function addRematchListeners() {
+  socket.on('rematch_requested', ({ name }) => {
+    document.getElementById('rematchStatus').textContent = `${name} wants a rematch!`;
+    document.getElementById('rematchBtn').style.display = 'none';
+    const btns = document.getElementById('rematchActionBtns');
+    if (btns) btns.style.display = 'flex';
+  });
+
+  socket.on('rematch_declined', () => {
+    document.getElementById('rematchBtn').disabled = false;
+    document.getElementById('rematchBtn').textContent = '⟳ Rematch';
+    document.getElementById('rematchStatus').textContent = 'Opponent declined the rematch.';
+  });
+
+  socket.on('rematch_start', ({ players }) => {
+    // Find our new color
+    const me = players.find(p => p.id === socket.id);
+    if (!me) return;
+    myColor = me.color;
+    const opp = players.find(p => p.id !== socket.id);
+    if (opp) opponentName = opp.name;
+
+    // Reset game state
+    document.getElementById('gameOverOverlay').classList.remove('show');
+    document.getElementById('rematchBtn').style.display = '';
+    document.getElementById('rematchBtn').disabled = false;
+    document.getElementById('rematchBtn').textContent = '⟳ Rematch';
+    const actionBtns = document.getElementById('rematchActionBtns');
+    if (actionBtns) actionBtns.style.display = 'none';
+    stopClock();
+    clocks = { w: timeControl.time, b: timeControl.time };
+    game = new Chess();
+    moveHistory = [];
+    viewingMove = -1;
+    selectedSquare = null;
+    clearHighlights();
+    buildBingoCard();
+
+    // Rebuild board with swapped orientation
+    const boardEl = document.getElementById('chessboard');
+    boardEl.innerHTML = '';
+    board = Chessboard('chessboard', {
+      position: 'start',
+      draggable: false,
+      orientation: myColor,
+      pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg',
+    });
+
+    // Update player names
+    const whiteName = myColor === 'white' ? myName : opponentName;
+    const blackName = myColor === 'black' ? myName : opponentName;
+    document.getElementById('badge-white-name').textContent = whiteName + (myColor === 'white' ? ' (you)' : '');
+    document.getElementById('badge-black-name').textContent = blackName + (myColor === 'black' ? ' (you)' : '');
+    document.getElementById('sidebar-white-name').textContent = whiteName + (myColor === 'white' ? ' (you)' : '');
+    document.getElementById('sidebar-black-name').textContent = blackName + (myColor === 'black' ? ' (you)' : '');
+
+    updateChessUI();
+    gameActive = true;
+    addLog('Rematch started! Colors swapped.', 'highlight');
+  });
 }
 
 function resign() {
   if (!gameActive) return;
   if (!confirm('Are you sure you want to resign?')) return;
+  stopClock();
   socket.emit('resign');
 }
 
