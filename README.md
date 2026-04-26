@@ -7,8 +7,8 @@ Live at: **[chess-bingo.onrender.com](https://chess-bingo.onrender.com)**
 ---
 
 ## Screenshots
-![Homepage](screenshots/homepage.png)
 ![Game](screenshots/game.png)
+![Homepage](screenshots/homepage.png)
 
 ---
 
