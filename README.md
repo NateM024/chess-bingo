@@ -6,6 +6,12 @@ Live at: **[chess-bingo.onrender.com](https://chess-bingo.onrender.com)**
 
 ---
 
+## Screenshots
+![Homepage](screenshots/homepage.png)
+![Game](screenshots/game.png)
+
+---
+
 ## How to play
 
 1. One player creates a room and chooses a time control
